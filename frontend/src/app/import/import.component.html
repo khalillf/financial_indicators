@@ -1,109 +1,98 @@
-<div class="p-4">
-  <!-- Section 1: Fiche Portefeuille -->
-  <div class="flex flex-wrap items-center gap-3 bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
-    <h2 class="text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap">
-      Import Fiche Portefeuille File
-    </h2>
-    <input
-      id="file_input"
-      type="file"
-      (change)="onFileSelected($event)"
-      class="text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer
-             bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700
-             dark:border-gray-600 dark:placeholder-gray-400"
-    />
-    <button
-      (click)="onUpload()"
-      class="text-sm text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg transition-colors"
-    >
-      Fiche_Portefeuille
-    </button>
-    <span *ngIf="uploadMessage" class="text-sm" [ngClass]="uploadMessage.includes('Error') ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">
+<div class="max-w-6xl mx-auto p-6"> <!-- Largeur augmentée de 4xl à 6xl -->
+  <!-- Section: Fiche Portefeuille -->
+  <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+    <div class="flex items-center gap-4 mb-4">
+      <i class="fas fa-file-upload text-blue-500 text-2xl"></i>
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Import Fiche Portefeuille File</h2>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-4">
+      <input id="file_input" type="file" (change)="onFileSelected($event)" 
+        class="w-full sm:w-auto text-gray-900 border border-gray-300 rounded-lg cursor-pointer
+               bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700
+               dark:border-gray-600 dark:placeholder-gray-400 p-2">
+      <button (click)="onUpload()" 
+        class="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition">
+        Fiche Portefeuille
+      </button>
+    </div>
+    <p *ngIf="uploadMessage" class="mt-2 text-sm" 
+      [ngClass]="uploadMessage.includes('Error') ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">
       {{ uploadMessage }}
-    </span>
-  </div>
-  <div *ngIf="uploadProgress > 0" class="mb-6">
-    <p class="text-sm text-gray-700 dark:text-gray-300">Progress: {{ uploadProgress }}%</p>
+    </p>
+    <div *ngIf="uploadProgress > 0" class="mt-2 text-sm text-gray-700 dark:text-gray-300">
+      Progress: {{ uploadProgress }}%
+    </div>
   </div>
 
-  <!-- Section 2: Categorie Upload -->
-  <div class="flex flex-wrap items-center gap-3 bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
-    <h2 class="text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap">
-      Import Categorie Excel File
-    </h2>
-    <input
-      id="categorie_file_input"
-      type="file"
-      (change)="onCategorieFileSelected($event)"
-      class="text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer
-             bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700
-             dark:border-gray-600 dark:placeholder-gray-400"
-    />
-    <button
-      (click)="onUploadCategorie()"
-      class="text-sm text-white bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg transition-colors"
-    >
-      Categorie
-    </button>
-    <span *ngIf="uploadCategorieMessage" class="text-sm" [ngClass]="uploadCategorieMessage.includes('Error') ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">
+  <!-- Section: Categorie Upload -->
+  <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+    <div class="flex items-center gap-4 mb-4">
+      <i class="fas fa-layer-group text-green-500 text-2xl"></i>
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Import Categorie Excel File</h2>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-4">
+      <input id="categorie_file_input" type="file" (change)="onCategorieFileSelected($event)"
+        class="w-full sm:w-auto p-2 text-gray-900 border border-gray-300 rounded-lg cursor-pointer
+               bg-gray-50 dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600">
+      <button (click)="onUploadCategorie()" 
+        class="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition">
+        Categorie
+      </button>
+    </div>
+    <p *ngIf="uploadCategorieMessage" class="mt-2 text-sm" 
+      [ngClass]="uploadCategorieMessage.includes('Error') ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">
       {{ uploadCategorieMessage }}
-    </span>
-  </div>
-  <div *ngIf="uploadCategorieProgress > 0" class="mb-6">
-    <p class="text-sm text-gray-700 dark:text-gray-300">Progress: {{ uploadCategorieProgress }}%</p>
+    </p>
+    <div *ngIf="uploadCategorieProgress > 0" class="mt-2 text-sm text-gray-700 dark:text-gray-300">
+      Progress: {{ uploadCategorieProgress }}%
+    </div>
   </div>
 
-  <!-- Section 3: ReferentielTitre Upload -->
-  <div class="flex flex-wrap items-center gap-3 bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
-    <h2 class="text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap">
-      Import ReferentielTitre Excel File
-    </h2>
-    <input
-      id="referentiel_file_input"
-      type="file"
-      (change)="onReferentielTitreFileSelected($event)"
-      class="text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer
-             bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700
-             dark:border-gray-600 dark:placeholder-gray-400"
-    />
-    <button
-      (click)="onUploadReferentielTitre()"
-      class="text-sm text-white bg-purple-500 hover:bg-purple-600 px-4 py-2 rounded-lg transition-colors"
-    >
-      ReferentielTitre
-    </button>
-    <span *ngIf="uploadReferentielTitreMessage" class="text-sm" [ngClass]="uploadReferentielTitreMessage.includes('Error') ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">
+  <!-- Section: ReferentielTitre Upload -->
+  <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+    <div class="flex items-center gap-4 mb-4">
+      <i class="fas fa-folder-open text-purple-500 text-2xl"></i>
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Import ReferentielTitre Excel File</h2>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-4">
+      <input id="referentiel_file_input" type="file" (change)="onReferentielTitreFileSelected($event)"
+        class="w-full sm:w-auto p-2 text-gray-900 border border-gray-300 rounded-lg cursor-pointer
+               bg-gray-50 dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600">
+      <button (click)="onUploadReferentielTitre()" 
+        class="w-full sm:w-auto bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-lg transition">
+        ReferentielTitre
+      </button>
+    </div>
+    <p *ngIf="uploadReferentielTitreMessage" class="mt-2 text-sm" 
+      [ngClass]="uploadReferentielTitreMessage.includes('Error') ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">
       {{ uploadReferentielTitreMessage }}
-    </span>
-  </div>
-  <div *ngIf="uploadReferentielTitreProgress > 0" class="mb-6">
-    <p class="text-sm text-gray-700 dark:text-gray-300">Progress: {{ uploadReferentielTitreProgress }}%</p>
+    </p>
+    <div *ngIf="uploadReferentielTitreProgress > 0" class="mt-2 text-sm text-gray-700 dark:text-gray-300">
+      Progress: {{ uploadReferentielTitreProgress }}%
+    </div>
   </div>
 
-  <!-- Section 4: Transparisation Upload -->
-  <div class="flex flex-wrap items-center gap-3 bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow">
-    <h2 class="text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap">
-      Import Transparisation Excel File
-    </h2>
-    <input
-      id="transparisation_file_input"
-      type="file"
-      (change)="onTransparisationFileSelected($event)"
-      class="text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer
-             bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700
-             dark:border-gray-600 dark:placeholder-gray-400"
-    />
-    <button
-      (click)="onUploadTransparisation()"
-      class="text-sm text-white bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg transition-colors"
-    >
-      Transparisation
-    </button>
-    <span *ngIf="uploadTransparisationMessage" class="text-sm" [ngClass]="uploadTransparisationMessage.includes('Error') ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">
+  <!-- Section: Transparisation Upload -->
+  <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+    <div class="flex items-center gap-4 mb-4">
+      <i class="fas fa-file-excel text-red-500 text-2xl"></i>
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Import Transparisation Excel File</h2>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-4">
+      <input id="transparisation_file_input" type="file" (change)="onTransparisationFileSelected($event)"
+        class="w-full sm:w-auto p-2 text-gray-900 border border-gray-300 rounded-lg cursor-pointer
+               bg-gray-50 dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600">
+      <button (click)="onUploadTransparisation()" 
+        class="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg transition">
+        Transparisation
+      </button>
+    </div>
+    <p *ngIf="uploadTransparisationMessage" class="mt-2 text-sm" 
+      [ngClass]="uploadTransparisationMessage.includes('Error') ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">
       {{ uploadTransparisationMessage }}
-    </span>
-  </div>
-  <div *ngIf="uploadTransparisationProgress > 0" class="mt-3">
-    <p class="text-sm text-gray-700 dark:text-gray-300">Progress: {{ uploadTransparisationProgress }}%</p>
+    </p>
+    <div *ngIf="uploadTransparisationProgress > 0" class="mt-2 text-sm text-gray-700 dark:text-gray-300">
+      Progress: {{ uploadTransparisationProgress }}%
+    </div>
   </div>
 </div>

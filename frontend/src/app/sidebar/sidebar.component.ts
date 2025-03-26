@@ -1,38 +1,45 @@
-/**** sidebar.component.ts ****/
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
-/** A single item in the sub-menu */
+/** Interface pour un élément du sous-menu */
 interface SidebarItem {
   label: string;
   icon: string;
   route: string;
 }
 
-/** A section in the sidebar, containing multiple items */
+/** Interface pour une section du menu */
 interface SidebarSection {
   label: string;
   icon: string;
   items: SidebarItem[];
-  expanded?: boolean; // for toggling open/close
+  expanded?: boolean; // pour gérer l'ouverture/fermeture
 }
 
 @Component({
   standalone: true,
   imports: [CommonModule, RouterModule],
   selector: 'app-sidebar',
-  templateUrl: './sidebar.component.html'
+  templateUrl: './sidebar.component.html',
+  animations: [
+    trigger('expandCollapse', [
+      state('collapsed', style({ height: '0px', opacity: 0, overflow: 'hidden' })),
+      state('expanded', style({ height: '*', opacity: 1 })),
+      transition('collapsed <=> expanded', animate('300ms ease-in-out'))
+    ])
+  ]
 })
 export class SidebarComponent {
 
-  // The array of SECTIONS, each with subsections
   sections: SidebarSection[] = [
-    /* 1) "Data" section */
-    {
-      label: 'Data',
-      icon: 'fa-solid fa-database',
-      items: [
+    { label: 'Data Importation', icon: 'fa-solid fa-file-import', items: [
+        { label: 'Importer les fichiers CSV', icon: 'fa-solid fa-file-upload', route: '/fp-file' },
+        { label: 'Situation', icon: 'fa-regular fa-folder-open', route: '/situation' }
+      ], expanded: true 
+    },
+    { label: 'Data', icon: 'fa-solid fa-database', items: [
         { label: 'CMR', icon: 'fa-solid fa-house', route: '/index' },
         { label: 'Excel', icon: 'fa-solid fa-file-excel', route: '/excel' },
         { label: 'Base Maroclear', icon: 'fa-solid fa-database', route: '/basemaroclear' },
@@ -40,77 +47,35 @@ export class SidebarComponent {
         { label: 'Emetteur', icon: 'fa-solid fa-bullhorn', route: '/emetteur' },
         { label: 'Te', icon: 'fa-solid fa-book', route: '/te' },
         { label: 'Cash Management', icon: 'fa-solid fa-money-bill-wave', route: '/cashmanagment' }
-      ],
-      expanded: true
-    },
-
-    /* 2) NEW "Data Importation of FP File" section */
-    {
-      label: 'Data Importation',
-      icon: 'fa-solid fa-file-import',
-      items: [
-        {
-          label: 'Fiche Portefeuille File',
-          icon: 'fa-solid fa-file-upload',
-          route: '/fp-file'
-        },
-        { label: 'situation', icon: 'fa-regular fa-folder-open', route: '/situation' },
-
-        // Add more sub-items here if needed
       ]
     },
-
-    /* 3) "Portefeuille" section */
-    {
-      label: 'Portefeuille',
-      icon: 'fa-solid fa-folder',
-      items: [
+    { label: 'Portefeuille', icon: 'fa-solid fa-folder', items: [
         { label: 'Fiche portefeuille', icon: 'fa-solid fa-folder', route: '/fichePortefeuille' },
         { label: 'Fiche portefeuille Transparisée', icon: 'fa-regular fa-folder-open', route: '/fptrans' },
       ]
     },
-    /* 4) "Titre & Tiers" section */
-    {
-      label: 'Titres & Tiers',
-      icon: 'fa-solid fa-file-lines',
-      items: [
+    { label: 'Titres & Tiers', icon: 'fa-solid fa-file-lines', items: [
         { label: 'Titre', icon: 'fa-solid fa-file-lines', route: '/titre' },
         { label: 'Titre transparisé', icon: 'fa-regular fa-file', route: '/titretrans' },
         { label: 'Tiers', icon: 'fa-solid fa-user-friends', route: '/tiers' },
       ]
     },
-    /* 5) "Allocations" section */
-    {
-      label: 'Allocations',
-      icon: 'fa-solid fa-chess-board',
-      items: [
-        {
-          label: 'Allocations Strategiques et marges de manoeuvre',
-          icon: 'fa-solid fa-chess-board',
-          route: '/allocations'
-        }
+    { label: 'Allocations', icon: 'fa-solid fa-chess-board', items: [
+        { label: 'Allocations Stratégiques et marges de manœuvre', icon: 'fa-solid fa-chess-board', route: '/allocations' }
       ]
     },
-    /* 6) "Repartition" section */
-    {
-      label: 'Repartition',
-      icon: 'fa-solid fa-chart-pie',
-      items: [
-        { label: 'Repartition', icon: 'fa-solid fa-chart-pie', route: '/repartition' },
-        { label: 'Repartition Détaillée', icon: 'fa-solid fa-chart-bar', route: '/repartitionD' }
+    { label: 'Repartition', icon: 'fa-solid fa-chart-pie', items: [
+        { label: 'Répartition', icon: 'fa-solid fa-chart-pie', route: '/repartition' },
+        { label: 'Répartition Détaillée', icon: 'fa-solid fa-chart-bar', route: '/repartitionD' }
       ]
     },
-    /* 7) "Logout" section */
-    {
-      label: 'Account',
-      icon: 'fa-solid fa-right-from-bracket',
-      items: [
+    { label: 'Account', icon: 'fa-solid fa-right-from-bracket', items: [
         { label: 'Logout', icon: 'fa-solid fa-right-from-bracket', route: '/logout' }
       ]
-    },
+    }
   ];
 
-  /** Toggle a section's 'expanded' state */
+  /** Fonction pour basculer l'état d'une section */
   toggleSection(section: SidebarSection) {
     section.expanded = !section.expanded;
   }

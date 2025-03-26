@@ -1,3 +1,4 @@
+// import.component.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
@@ -15,20 +16,23 @@ export class ImportComponentComponent {
   selectedFile: File | null = null;
   selectedCategorieFile: File | null = null;
   selectedReferentielTitreFile: File | null = null;
-  // New: transparisation file
   selectedTransparisationFile: File | null = null;
+  // New: Op file
+  selectedOpFile: File | null = null;
 
   uploadProgress: number = 0;
   uploadCategorieProgress: number = 0;
   uploadReferentielTitreProgress: number = 0;
-  // New: transparisation progress
   uploadTransparisationProgress: number = 0;
+  // New: Op upload progress
+  uploadOpProgress: number = 0;
 
   uploadMessage: string = '';
   uploadCategorieMessage: string = '';
   uploadReferentielTitreMessage: string = '';
-  // New: transparisation message
   uploadTransparisationMessage: string = '';
+  // New: Op upload message
+  uploadOpMessage: string = '';
 
   constructor(private http: HttpClient, private importService: ImportService) {}
 
@@ -53,11 +57,18 @@ export class ImportComponentComponent {
     }
   }
 
-  // New: Transparisation file selection
   onTransparisationFileSelected(event: Event): void {
     const element = event.target as HTMLInputElement;
     if (element.files && element.files.length > 0) {
       this.selectedTransparisationFile = element.files[0];
+    }
+  }
+
+  // New: Op file selection
+  onOpFileSelected(event: Event): void {
+    const element = event.target as HTMLInputElement;
+    if (element.files && element.files.length > 0) {
+      this.selectedOpFile = element.files[0];
     }
   }
 
@@ -130,7 +141,6 @@ export class ImportComponentComponent {
     });
   }
 
-  // New: Transparisation file upload method
   onUploadTransparisation(): void {
     if (!this.selectedTransparisationFile) {
       this.uploadTransparisationMessage = 'Please select a Transparisation file.';
@@ -150,6 +160,30 @@ export class ImportComponentComponent {
         console.error(err);
         this.uploadTransparisationMessage = 'Error uploading Transparisation file.';
         this.uploadTransparisationProgress = 0;
+      }
+    });
+  }
+
+  // New: Op file upload method
+  onUploadOp(): void {
+    if (!this.selectedOpFile) {
+      this.uploadOpMessage = 'Please select an Op file.';
+      return;
+    }
+
+    this.importService.uploadOpExcel(this.selectedOpFile).subscribe({
+      next: (event: HttpEvent<any>) => {
+        if (event.type === HttpEventType.UploadProgress && event.total) {
+          this.uploadOpProgress = Math.round((100 * event.loaded) / event.total);
+        } else if (event.type === HttpEventType.Response) {
+          this.uploadOpMessage = 'Op file uploaded successfully!';
+          this.uploadOpProgress = 0;
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        this.uploadOpMessage = 'Error uploading Op file.';
+        this.uploadOpProgress = 0;
       }
     });
   }

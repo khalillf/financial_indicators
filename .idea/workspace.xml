@@ -5,58 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e16dfe08-d70e-4200-b9a9-3122c674828e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/frontend.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/controller/CategorieController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/controller/ReferentielTitreController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/controller/TransparisationController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/CategorieDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/ReferentielTitreDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/TransparisationDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/entitys/Transparisation.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/repository/CategorieRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/repository/ReferentielTitreRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/repository/TransparisationRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/CategorieService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/ReferentielTitreService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/TransparisationService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/CategorieServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/ReferentielTitreServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/TransparisationServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/controller/OpController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/OpDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/entitys/Op.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/repository/OpRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/OpService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/OpServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/.editorconfig" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/.vscode/extensions.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/.vscode/launch.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/.vscode/tasks.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/angular.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/package-lock.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/public/favicon.ico" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/src/app/app.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/auth/login-request.model.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/src/app/app.component.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/src/app/app.component.spec.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/src/app/app.component.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/src/app/app.config.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/src/app/app.routes.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/src/app/component/import-component/import-component.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/auth/login-response.model.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/src/app/component/import-component/import-component.component.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/src/app/component/import-component/import-component.component.spec.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/src/app/component/import-component/import-component.component.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/src/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/src/main.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/src/styles.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/tsconfig.app.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/tsconfig.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cli/tsconfig.spec.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/TransparisationModuleApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/TransparisationModuleApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/config/CorsConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/config/CorsConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/entitys/Categorie.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/entitys/Categorie.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/entitys/ReferentielTitre.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/entitys/ReferentielTitre.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/security/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/FichePortefeuilleService.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/FichePortefeuilleService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/import/import.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/import/import.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/import/import.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/import/import.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/import/import.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/import/import.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/controller/TransparisationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/controller/TransparisationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/TransparisationDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/TransparisationDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/entitys/Transparisation.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/entitys/Transparisation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/repository/TransparisationRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/repository/TransparisationRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/TransparisationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/TransparisationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/TransparisationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/TransparisationServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -181,6 +145,7 @@
       <workItem from="1742346608828" duration="1911000" />
       <workItem from="1742693677944" duration="18328000" />
       <workItem from="1742868085856" duration="8744000" />
+      <workItem from="1742958404677" duration="5520000" />
     </task>
     <servers />
   </component>

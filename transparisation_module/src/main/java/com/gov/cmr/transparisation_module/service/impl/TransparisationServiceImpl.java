@@ -11,12 +11,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -38,10 +39,9 @@ public class TransparisationServiceImpl implements TransparisationService {
         return dtos;
     }
 
-    // Implementing the interface method getById(String titre)
     @Override
-    public TransparisationDTO getById(String titre) {
-        Optional<Transparisation> optional = repository.findById(titre);
+    public TransparisationDTO getById(Integer id) {
+        Optional<Transparisation> optional = repository.findById(id);
         return optional.map(this::mapToDTO).orElse(null);
     }
 
@@ -53,11 +53,12 @@ public class TransparisationServiceImpl implements TransparisationService {
     }
 
     @Override
-    public TransparisationDTO update(String titre, TransparisationDTO dto) {
-        Optional<Transparisation> optional = repository.findById(titre);
+    public TransparisationDTO update(Integer id, TransparisationDTO dto) {
+        Optional<Transparisation> optional = repository.findById(id);
         if (optional.isPresent()) {
             Transparisation entity = optional.get();
-            // Do not update titre as it's the identifier.
+            // Do not update id as it's the primary key.
+            entity.setTitre(dto.getTitre());
             entity.setDateImage(dto.getDateImage());
             entity.setDateImageFin(dto.getDateImageFin());
             entity.setCodeIsin(dto.getCodeIsin());
@@ -73,8 +74,8 @@ public class TransparisationServiceImpl implements TransparisationService {
     }
 
     @Override
-    public void delete(String titre) {
-        repository.deleteById(titre);
+    public void delete(Integer id) {
+        repository.deleteById(id);
     }
 
     @Override
@@ -93,20 +94,17 @@ public class TransparisationServiceImpl implements TransparisationService {
                 Row row = rows.next();
                 Transparisation entity = new Transparisation();
 
-                // Column mapping (0-based index)
+                // Note: Do not set the id field here if you want it auto-generated.
                 entity.setDateImage(parseDateCell(row.getCell(0)));
                 entity.setDateImageFin(parseDateCell(row.getCell(1)));
-                // Use TITRE as the id
-                String titreValue = getCellValueAsString(row.getCell(2));
-                entity.setTitre(titreValue);
+                // TITRE is now a regular field.
+                entity.setTitre(getCellValueAsString(row.getCell(2)));
                 entity.setCodeIsin(getCellValueAsString(row.getCell(3)));
                 entity.setDescription(getCellValueAsString(row.getCell(4)));
                 entity.setCategorie(getCellValueAsString(row.getCell(5)));
-
-                // For integer columns, check cell type
-                entity.setDettePublic(parseIntegerCell(row.getCell(6)));
-                entity.setDettePrivee(parseIntegerCell(row.getCell(7)));
-                entity.setAction(parseIntegerCell(row.getCell(8)));
+                entity.setDettePublic(parseDoubleCell(row.getCell(6)));
+                entity.setDettePrivee(parseDoubleCell(row.getCell(7)));
+                entity.setAction(parseDoubleCell(row.getCell(8)));
 
                 entities.add(entity);
             }
@@ -118,31 +116,32 @@ public class TransparisationServiceImpl implements TransparisationService {
     }
 
     /**
-     * Helper method to parse an integer cell.
-     * If the cell is numeric, it casts the numeric value to int.
-     * If the cell is a string, it removes any commas before parsing.
+     * Helper method to parse a cell into a Double.
+     * Directly returns the numeric value if cell is numeric, otherwise parses the cell's string value.
      */
-    private Integer parseIntegerCell(Cell cell) {
+    private Double parseDoubleCell(Cell cell) {
         if (cell == null) return null;
         if (cell.getCellType() == CellType.NUMERIC) {
-            // Directly cast the numeric value to int (this truncates any decimals)
-            return (int) cell.getNumericCellValue();
-        } else if (cell.getCellType() == CellType.STRING) {
-            String value = cell.getStringCellValue().trim();
-            if (value.isEmpty()) return null;
-            try {
-                // Using a locale-aware number format (change Locale.FRANCE if needed)
-                NumberFormat format = NumberFormat.getInstance(Locale.FRANCE);
-                Number number = format.parse(value);
-                return number.intValue();
-            } catch (ParseException e) {
-                e.printStackTrace();
-                return null;
-            }
+            return cell.getNumericCellValue();
         }
-        return null;
+        String cellValue = cell.getStringCellValue().replace("\u00A0", "").trim();
+        if (cellValue.isEmpty()) {
+            return null;
+        }
+        if (cellValue.contains(",") && !cellValue.contains(".")) {
+            cellValue = cellValue.replace(",", ".");
+        } else if (cellValue.contains(",") && cellValue.contains(".")) {
+            cellValue = cellValue.replace(",", "");
+        }
+        try {
+            return Double.valueOf(cellValue);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
-    // Helper: get cell value as String (unchanged)
+
+    // Helper: get cell value as String.
     private String getCellValueAsString(Cell cell) {
         if (cell == null) return "";
         switch (cell.getCellType()) {
@@ -167,7 +166,7 @@ public class TransparisationServiceImpl implements TransparisationService {
         }
     }
 
-    // Helper: convert a date cell to LocalDate (with custom formatter as needed)
+    // Helper: convert a date cell to LocalDate.
     private LocalDate parseDateCell(Cell cell) {
         if (cell == null) return null;
         if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
@@ -176,7 +175,6 @@ public class TransparisationServiceImpl implements TransparisationService {
             String dateStr = cell.getStringCellValue().trim();
             if (!dateStr.isEmpty()) {
                 try {
-                    // Adjust pattern if necessary; here we assume "yyyy-MM-dd"
                     return LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                 } catch (Exception ex) {
                     System.err.println("Error parsing date: " + dateStr + " - " + ex.getMessage());
@@ -186,11 +184,11 @@ public class TransparisationServiceImpl implements TransparisationService {
         return null;
     }
 
-
-    // Mapper: convert entity to DTO
+    // Mapper: convert entity to DTO.
     private TransparisationDTO mapToDTO(Transparisation entity) {
         if (entity == null) return null;
         return TransparisationDTO.builder()
+                .id(entity.getId())
                 .titre(entity.getTitre())
                 .dateImage(entity.getDateImage())
                 .dateImageFin(entity.getDateImageFin())
@@ -203,10 +201,12 @@ public class TransparisationServiceImpl implements TransparisationService {
                 .build();
     }
 
-    // Mapper: convert DTO to entity
+    // Mapper: convert DTO to entity.
     private Transparisation mapToEntity(TransparisationDTO dto) {
         if (dto == null) return null;
         return Transparisation.builder()
+                // id is set only if provided (or will be auto-generated)
+                .id(dto.getId())
                 .titre(dto.getTitre())
                 .dateImage(dto.getDateImage())
                 .dateImageFin(dto.getDateImageFin())

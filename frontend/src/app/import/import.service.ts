@@ -11,8 +11,10 @@ export class ImportService {
   private fichePortefeuilleUploadUrl = 'http://localhost:8080/api/fiche-portefeuille/upload';
   private categorieUploadUrl = 'http://localhost:8080/api/categories/import-excel';
   private referentielTitreUploadUrl = 'http://localhost:8080/api/referentiel-titres/upload';
-  // New endpoint for Transparisation upload
+  // Existing endpoint for Transparisation upload
   private transparisationUploadUrl = 'http://localhost:8080/api/transparisation/upload';
+  // New endpoint for Op upload
+  private opUploadUrl = 'http://localhost:8080/api/op/upload';
 
   constructor(private http: HttpClient) {}
 
@@ -43,11 +45,20 @@ export class ImportService {
     });
   }
 
-  // New method for Transparisation upload
   uploadTransparisationExcel(file: File): Observable<HttpEvent<any>> {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post<any>(this.transparisationUploadUrl, formData, {
+      reportProgress: true,
+      observe: 'events'
+    });
+  }
+
+  // New method for Op upload
+  uploadOpExcel(file: File): Observable<HttpEvent<any>> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<any>(this.opUploadUrl, formData, {
       reportProgress: true,
       observe: 'events'
     });

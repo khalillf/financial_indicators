@@ -8,13 +8,14 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class TransparisationDTO {
+    private Integer id;  // New identifier field
     private String titre;
     private LocalDate dateImage;
     private LocalDate dateImageFin;
     private String codeIsin;
     private String description;
     private String categorie;
-    private Integer dettePublic;
-    private Integer dettePrivee;
-    private Integer action;
+    private Double dettePublic;
+    private Double dettePrivee;
+    private Double action;
 }

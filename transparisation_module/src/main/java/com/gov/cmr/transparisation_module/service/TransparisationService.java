@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface TransparisationService {
     List<TransparisationDTO> getAll();
-    TransparisationDTO getById(String titre);
+    TransparisationDTO getById(Integer id);
     TransparisationDTO create(TransparisationDTO dto);
-    TransparisationDTO update(String titre, TransparisationDTO dto);
-    void delete(String titre);
+    TransparisationDTO update(Integer id, TransparisationDTO dto);
+    void delete(Integer id);
     void importFromExcel(MultipartFile file);
 }

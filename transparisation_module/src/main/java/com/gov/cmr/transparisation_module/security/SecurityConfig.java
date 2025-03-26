@@ -62,6 +62,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/categories/**").permitAll()
                         .requestMatchers("/api/referentiel-titres/**").permitAll()
                         .requestMatchers("/api/transparisation/**").permitAll()
+                        .requestMatchers("/api/op/**").permitAll()
                         // Let POST /api/users be open if you do sign-up
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
 

@@ -1,6 +1,6 @@
 <div class="flex">
-  <!-- Sidebar -->
-  <app-sidebar></app-sidebar>
+  <!-- Render sidebar only when showSidebar is true -->
+  <app-sidebar *ngIf="showSidebar"></app-sidebar>
 
   <!-- Main content area -->
   <div class="flex-grow p-4">

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { AuthService } from '../auth/auth.service';
@@ -40,9 +40,9 @@ export class LoginComponent {
 
     this.authService.login(req).subscribe({
       next: (res) => {
-        // Store token & navigate
+        // Store token and navigate
         this.authService.storeToken(res.token);
-        this.router.navigate(['/home']); // or wherever
+        this.router.navigate(['/home']);
       },
       error: (err) => {
         console.error(err);

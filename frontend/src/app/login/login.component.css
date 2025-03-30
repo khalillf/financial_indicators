@@ -1,0 +1,57 @@
+/* Reset styles (if needed, though Tailwind resets most) */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+/* The left-side pseudo-element: rotated, darkened background */
+.left-side::before {
+  content: "";
+  position: absolute;
+  top: -50px;
+  left: 0;
+  width: 100%;
+  height: 120%;
+  background: url('/assets/photo/cmr.jpeg') no-repeat center center;
+  background-size: cover;
+  filter: brightness(50%);
+  transform: rotate(30deg);
+  transform-origin: center;
+  z-index: 0;
+}
+
+/* Fade-in Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Apply fadeIn animation to left-side, logo, and login-box */
+.left-side {
+  animation: fadeIn 1s ease-out forwards;
+}
+
+.logo {
+  width: 450px;
+  padding-bottom: 40px;
+  margin-bottom: 20px;
+  animation: fadeIn 1s ease-out 0.5s forwards;
+}
+
+.login-box {
+  animation: fadeIn 1s ease-out 1s forwards;
+}
+
+/* Optional: Adjust error-message styling if needed */
+#error-message {
+  color: red;
+  margin-top: 10px;
+}

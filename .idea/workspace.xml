@@ -5,27 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e16dfe08-d70e-4200-b9a9-3122c674828e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/frontend/src/app/table-avant-apres/my-aggregator.service.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/app/table-avant-apres/table-avant-apres.component.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/app/table-avant-apres/table-avant-apres.component.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/app/table-avant-apres/table-avant-apres.component.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/controller/SituationAvantTraitementController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/AggregatedAllClassesDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/ClassIDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/ClassIIDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/ClassIIIDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/ClassIVDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/SituationAvantGroupedDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/app/auth/auth.guard.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/assets/photo/CMR.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/assets/photo/cmr.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/assets/photo/cmr.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/app.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/app.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/app.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/app.component.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/app.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/app.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/sidebar/sidebar.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/sidebar/sidebar.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/security/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/SituationAvantTraitementService.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/SituationAvantTraitementService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/OpServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/OpServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/SituationAvantTraitementServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/SituationAvantTraitementServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/logics/SituationLogic.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/logics/SituationLogic.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/home/home.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/home/home.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/home/home.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/home/home.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/login/login.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/login/login.component.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/login/login.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/login/login.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/login/login.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/login/login.component.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,39 +47,40 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Maven.transparisation_module [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.transparisation_module [compile].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.transparisation_module [install].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.transparisation_module [package].executor&quot;: &quot;Run&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Spring Boot.TransparisationModuleApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;corretto-17&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/PC/Desktop/CMR/financial_indicators_cmr/frontend/package.json&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_interpreter_path&quot;: &quot;node&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;npm.Angular CLI Server (cli).executor&quot;: &quot;Run&quot;,
-    &quot;npm.Angular CLI Server (untitled).executor&quot;: &quot;Run&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.annotationProcessors&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\PC\\Desktop\\CMR\\financial_indicators_cmr\\frontend\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Maven.transparisation_module [clean].executor": "Run",
+    "Maven.transparisation_module [compile].executor": "Run",
+    "Maven.transparisation_module [install].executor": "Run",
+    "Maven.transparisation_module [package].executor": "Run",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.TransparisationModuleApplication.executor": "Run",
+    "git-widget-placeholder": "lahbabi__ahmed",
+    "jdk.selected.JAVA_MODULE": "corretto-17",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/PC/Desktop/CMR/financial_indicators_cmr/frontend/src/assets/photo",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_interpreter_path": "node",
+    "nodejs_package_manager_path": "npm",
+    "npm.Angular CLI Server (cli).executor": "Run",
+    "npm.Angular CLI Server (untitled).executor": "Run",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.annotationProcessors",
+    "ts.external.directory.path": "C:\\Users\\PC\\Desktop\\CMR\\financial_indicators_cmr\\frontend\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\PC\Desktop\CMR\financial_indicators_cmr\frontend\src\assets\photo" />
       <recent name="C:\Users\PC\Desktop\CMR\financial_indicators_cmr\transparisation_module\src\main\resources\data" />
       <recent name="C:\Users\PC\Desktop\CMR\financial_indicators_cmr\transparisation_module\src\main\java\com\gov\cmr\transparisation_module" />
     </key>
@@ -97,7 +90,7 @@
       <recent name="C:\Users\PC\Desktop\CMR\financial_indicators_cmr\cli\src\app\component" />
     </key>
   </component>
-  <component name="RunManager" selected="Spring Boot.TransparisationModuleApplication">
+  <component name="RunManager" selected="npm.Angular CLI Server (untitled)">
     <configuration name="Angular Application (cli)" type="JavascriptDebugType" uri="http://localhost:4200">
       <method v="2" />
     </configuration>
@@ -151,7 +144,8 @@
       <workItem from="1742693677944" duration="18328000" />
       <workItem from="1742868085856" duration="8744000" />
       <workItem from="1742958404677" duration="14177000" />
-      <workItem from="1743139195696" duration="9687000" />
+      <workItem from="1743139195696" duration="9938000" />
+      <workItem from="1743292231804" duration="4822000" />
     </task>
     <servers />
   </component>

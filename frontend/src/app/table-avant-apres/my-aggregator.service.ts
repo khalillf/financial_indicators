@@ -2,23 +2,28 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-// Adjust your interface to match the exact JSON structure
+/* -----------------------------------------
+   DTOs for your aggregatedAllClasses API.
+----------------------------------------- */
 export interface AggregatedAllClassesDTO {
-  classI: ClassIDTO;
-  classII: ClassIIDTO;
-  classIII: ClassIIIDTO;
-  classIV: ClassIVDTO;
+  classI:    ClassIDTO;
+  classII:   ClassIIDTO;
+  classIII:  ClassIIIDTO;
+  classIV:   ClassIVDTO;
+
+  // Grand totals for the entire portfolio
   grandTotalVC: string;
   grandTotalVM: string;
 }
 
+// Each "class" interface (as you had them).
 export interface ClassIDTO {
   bdtVC: string; bdtVM: string;
   vjgVC: string; vjgVM: string;
   opciEtatVC: string; opciEtatVM: string;
   omltPursVC: string; omltPursVM: string;
   operationEncoursVC: string; operationEncoursVM: string;
-  omltPbVC: string; omltPbVM: string;
+  omltPbVC: string; omltPbVM: string; // after
   totalClassIVC: string; totalClassIVM: string;
   ratioI: string;
 }
@@ -29,7 +34,7 @@ export interface ClassIIDTO {
   oncVC: string; oncVM: string;
   monetaireVC: string; monetaireVM: string;
   omltVC: string; omltVM: string;
-  omltPrVC: string; omltPrVM: string;
+  omltPrVC: string; omltPrVM: string; // after
   omltDedVC: string; omltDedVM: string;
   totalClassIIVC: string; totalClassIIVM: string;
   ratioII: string;
@@ -40,7 +45,7 @@ export interface ClassIIIDTO {
   opcvmActDivVC: string; opcvmActDivVM: string;
   fpctVC: string; fpctVM: string;
   actionsDedVC: string; actionsDedVM: string;
-  omltActVC: string; omltActVM: string;
+  omltActVC: string; omltActVM: string; // after
   fondsCapRisqueVC: string; fondsCapRisqueVM: string;
   totalClassIIIVC: string; totalClassIIIVM: string;
   ratioIII: string;
@@ -54,13 +59,42 @@ export interface ClassIVDTO {
   ratioIV: string;
 }
 
+/* -----------------------------------------
+   Service to call your three endpoints:
+   1) /aggregated-all-classes       -> GET
+   2) /search-transparisations      -> GET with date params
+   3) /compute-values               -> GET with ptf param
+----------------------------------------- */
 @Injectable({ providedIn: 'root' })
 export class MyAggregatorService {
-  private apiUrl = 'http://localhost:8080/api/situation-avant-traitement/aggregated-all-classes';
+
+  private baseUrl = 'http://localhost:8080/api/situation-avant-traitement';
 
   constructor(private http: HttpClient) {}
 
+  /**
+   * 1) Returns the "avant" aggregator data.
+   */
   getAggregatedAllClasses(): Observable<AggregatedAllClassesDTO> {
-    return this.http.get<AggregatedAllClassesDTO>(this.apiUrl);
+    const url = `${this.baseUrl}/aggregated-all-classes`;
+    return this.http.get<AggregatedAllClassesDTO>(url);
   }
+
+  /**
+   * 2) Calls the /search-transparisations API to populate 'trans_tempo' on the server.
+   *    dateImage, dateImageFin in YYYY-MM-DD format.
+   */
+  getSearchTransparisations(dateImage: string, dateImageFin: string): Observable<any> {
+    const url = `${this.baseUrl}/search-transparisations?dateImage=${dateImage}&dateImageFin=${dateImageFin}`;
+    return this.http.get<any>(url);
+  }
+
+  /**
+   * 3) Calls the /compute-values API, returning the splitted TOT row (and possibly more).
+   */
+  computeValues(ptf: string): Observable<any> {
+    const url = `${this.baseUrl}/compute-values?ptf=${ptf}`;
+    return this.http.get<any>(url);
+  }
+
 }

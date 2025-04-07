@@ -18,4 +18,26 @@ public class TransparisationDTO {
     private Double dettePublic;
     private Double dettePrivee;
     private Double action;
+
+    public TransparisationDTO(
+            LocalDate dateImage,
+            LocalDate dateImageFin,
+            String titre,
+            String codeIsin,
+            String description,
+            String categorie,
+            Double dettePublic,
+            Double dettePrivee,
+            Double action
+    ) {
+        this.dateImage = dateImage;
+        this.dateImageFin = dateImageFin;
+        this.titre = titre;
+        this.codeIsin = codeIsin;
+        this.description = description;
+        this.categorie = categorie;
+        this.dettePublic = dettePublic;
+        this.dettePrivee = dettePrivee;
+        this.action = action;
+    }
 }

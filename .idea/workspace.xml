@@ -5,27 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e16dfe08-d70e-4200-b9a9-3122c674828e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/frontend/src/app/table-avant-apres/my-aggregator.service.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/app/table-avant-apres/table-avant-apres.component.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/app/table-avant-apres/table-avant-apres.component.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/app/table-avant-apres/table-avant-apres.component.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/controller/SituationAvantTraitementController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/AggregatedAllClassesDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/ClassIDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/ClassIIDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/ClassIIIDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/ClassIVDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/SituationAvantGroupedDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/AggregatedResultDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/MyDateRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/TransparisationFilterRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/TransparisationGroupProjection.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/entitys/TransparisationTempo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/repository/TransparisationTempoRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/app.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/app.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/sidebar/sidebar.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/sidebar/sidebar.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/security/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/SituationAvantTraitementService.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/SituationAvantTraitementService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/OpServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/OpServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/SituationAvantTraitementServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/SituationAvantTraitementServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/table-avant-apres/my-aggregator.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/table-avant-apres/my-aggregator.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/table-avant-apres/table-avant-apres.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/table-avant-apres/table-avant-apres.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/table-avant-apres/table-avant-apres.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/table-avant-apres/table-avant-apres.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/controller/SituationAvantTraitementController.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/controller/SituationAvantTraitementController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/TransparisationDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/model/DTO/TransparisationDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/repository/TransparisationRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/repository/TransparisationRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/TransparisationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/TransparisationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/TransparisationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/TransparisationServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/logics/SituationLogic.java" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/java/com/gov/cmr/transparisation_module/service/impl/logics/SituationLogic.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transparisation_module/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/transparisation_module/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -97,7 +92,7 @@
       <recent name="C:\Users\PC\Desktop\CMR\financial_indicators_cmr\cli\src\app\component" />
     </key>
   </component>
-  <component name="RunManager" selected="Spring Boot.TransparisationModuleApplication">
+  <component name="RunManager" selected="npm.Angular CLI Server (untitled)">
     <configuration name="Angular Application (cli)" type="JavascriptDebugType" uri="http://localhost:4200">
       <method v="2" />
     </configuration>

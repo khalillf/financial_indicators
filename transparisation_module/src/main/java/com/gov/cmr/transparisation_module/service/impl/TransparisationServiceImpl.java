@@ -1,6 +1,7 @@
 package com.gov.cmr.transparisation_module.service.impl;
 
 import com.gov.cmr.transparisation_module.model.DTO.TransparisationDTO;
+import com.gov.cmr.transparisation_module.model.DTO.TransparisationGroupProjection;
 import com.gov.cmr.transparisation_module.model.entitys.Transparisation;
 import com.gov.cmr.transparisation_module.repository.TransparisationRepository;
 import com.gov.cmr.transparisation_module.service.TransparisationService;
@@ -188,7 +189,6 @@ public class TransparisationServiceImpl implements TransparisationService {
     private TransparisationDTO mapToDTO(Transparisation entity) {
         if (entity == null) return null;
         return TransparisationDTO.builder()
-                .id(entity.getId())
                 .titre(entity.getTitre())
                 .dateImage(entity.getDateImage())
                 .dateImageFin(entity.getDateImageFin())
@@ -205,8 +205,6 @@ public class TransparisationServiceImpl implements TransparisationService {
     private Transparisation mapToEntity(TransparisationDTO dto) {
         if (dto == null) return null;
         return Transparisation.builder()
-                // id is set only if provided (or will be auto-generated)
-                .id(dto.getId())
                 .titre(dto.getTitre())
                 .dateImage(dto.getDateImage())
                 .dateImageFin(dto.getDateImageFin())
@@ -218,4 +216,10 @@ public class TransparisationServiceImpl implements TransparisationService {
                 .action(dto.getAction())
                 .build();
     }
+
+
+
+
+
+
 }

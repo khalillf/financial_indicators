@@ -15,5 +15,5 @@ public interface TransparisationService {
     TransparisationDTO update(Integer id, TransparisationDTO dto);
     void delete(Integer id);
     void importFromExcel(MultipartFile file);
-
+    public List<TransparisationDTO> getByDateRange(LocalDate startDate, LocalDate endDate);
 }

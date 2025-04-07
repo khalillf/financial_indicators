@@ -44,6 +44,17 @@ export class SidebarComponent {
 
         // Add more sub-items here if needed
       ]
+    },{
+      label: 'File consultation',
+      icon: 'fa-solid fa-file-import',
+      items: [
+        {
+          label: 'Transparisation',
+          icon: 'fa-solid fa-file-upload',
+          route: '/trans'
+        },
+        // Add more sub-items here if needed
+      ]
     },
 
     /* 3) "Portefeuille" section */

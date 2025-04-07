@@ -1,0 +1,61 @@
+<div class="max-w-7xl mx-auto p-6 bg-white shadow rounded-xl">
+  <h2 class="text-2xl font-bold mb-6 text-gray-800">📅 Consult Transparisation by Date</h2>
+
+  <form (submit)="loadData()" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div>
+      <label for="startDate" class="block text-sm font-medium text-gray-700">Start Date:</label>
+      <input type="date" id="startDate" [(ngModel)]="startDate" name="startDate"
+             class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+             required>
+    </div>
+
+    <div>
+      <label for="endDate" class="block text-sm font-medium text-gray-700">End Date:</label>
+      <input type="date" id="endDate" [(ngModel)]="endDate" name="endDate"
+             class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+             required>
+    </div>
+
+    <div class="flex items-end">
+      <button type="submit"
+              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow">
+        🔍 Search
+      </button>
+    </div>
+  </form>
+
+  <div *ngIf="transparisations.length > 0" class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200 border rounded-lg shadow">
+      <thead class="bg-gray-100 text-xs text-gray-600 uppercase tracking-wider">
+      <tr>
+        <th class="px-4 py-2">Titre</th>
+        <th class="px-4 py-2">Code ISIN</th>
+        <th class="px-4 py-2">Description</th>
+        <th class="px-4 py-2">Catégorie</th>
+        <th class="px-4 py-2">Date Image</th>
+        <th class="px-4 py-2">Date Image Fin</th>
+        <th class="px-4 py-2">Dette Publique</th>
+        <th class="px-4 py-2">Dette Privée</th>
+        <th class="px-4 py-2">Action</th>
+      </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200 text-sm text-gray-700">
+      <tr *ngFor="let item of transparisations" class="hover:bg-gray-50">
+        <td class="px-4 py-2 font-medium">{{ item.titre }}</td>
+        <td class="px-4 py-2">{{ item.codeIsin }}</td>
+        <td class="px-4 py-2">{{ item.description }}</td>
+        <td class="px-4 py-2">{{ item.categorie }}</td>
+        <td class="px-4 py-2">{{ item.dateImage.join('-') }}</td>
+        <td class="px-4 py-2">{{ item.dateImageFin.join('-') }}</td>
+        <td class="px-4 py-2">{{ item.dettePublic | number:'1.2-2' }}</td>
+        <td class="px-4 py-2">{{ item.dettePrivee | number:'1.2-2' }}</td>
+        <td class="px-4 py-2">{{ item.action | number:'1.2-2' }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="transparisations.length === 0 && startDate && endDate" class="mt-6 text-gray-500 text-center">
+    No data found for the selected date range.
+  </div>
+</div>

@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 public interface TransparisationRepository extends JpaRepository<Transparisation, Integer> {
-
+    List<Transparisation> findByDateImageBetween(LocalDate startDate, LocalDate endDate);
     @Query(value = """
         SELECT DISTINCT
                t.date_image       AS dateImage,

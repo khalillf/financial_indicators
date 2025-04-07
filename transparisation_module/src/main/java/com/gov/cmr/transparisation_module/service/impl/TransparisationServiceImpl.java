@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -218,7 +219,12 @@ public class TransparisationServiceImpl implements TransparisationService {
     }
 
 
-
+    public List<TransparisationDTO> getByDateRange(LocalDate startDate, LocalDate endDate) {
+        List<Transparisation> results = repository.findByDateImageBetween(startDate, endDate);
+        return results.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
 
 
 

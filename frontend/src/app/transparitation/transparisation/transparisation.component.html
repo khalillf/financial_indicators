@@ -14,6 +14,8 @@
       <th class="px-4 py-2 border">Dette Priv VM</th>
       <th class="px-4 py-2 border">Actions VC</th>
       <th class="px-4 py-2 border">Actions VM</th>
+      <th class="px-4 py-2 border">total fp VC</th>
+      <th class="px-4 py-2 border">total fp VM</th>
     </tr>
     </thead>
     <tbody>
@@ -26,6 +28,8 @@
       <td class="border px-4 py-2">{{ row.dettePrivVm | number:'1.2-2' }}</td>
       <td class="border px-4 py-2">{{ row.actionsVc | number:'1.2-2' }}</td>
       <td class="border px-4 py-2">{{ row.actionsVm | number:'1.2-2' }}</td>
+      <td class="border px-4 py-2">{{ row.totalVM_before | number:'1.2-2' }}</td>
+      <td class="border px-4 py-2">{{ row.totalVC_before | number:'1.2-2' }}</td>
     </tr>
     </tbody>
   </table>

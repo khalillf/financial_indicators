@@ -23,12 +23,16 @@ interface DisplayRow {
   date: string;
   classe: number | null;   // if it's an item, we store the class
   categorieTitre: string;  // e.g. "Bons émis par Adjudication", or "Total", or blank
+
+  // Avant retraitement
   vc: number;              // "pdrTotalNetSum"
   vm: number;              // "totalValoSum"
-
-  // We’ll store ratio in decimal form (0.4422 = 44.22%)
   ratioVc: number;
   ratioVm: number;
+
+  // Après retraitement (initialement 0 ou undefined)
+  apresVc?: number;
+  apresVm?: number;
 }
 
 @Component({
@@ -54,7 +58,7 @@ export class SituationComponent {
   // The final table rows (after grouping, summing, etc.)
   displayedData: DisplayRow[] = [];
 
-  // The “Transparise” results, unchanged
+  // The “Transparise” results, shown in the second table (if you keep it)
   transpariseResults: any[] = [];
 
   //========================================================
@@ -84,11 +88,7 @@ export class SituationComponent {
   }
 
   //========================================================
-  // 3) Build a "fancy" table for the selected date:
-  //    - Add "Date" column
-  //    - Group by numClasse
-  //    - Class total row + ratio row
-  //    - Grand total row
+  // 3) Build a table for the selected date (avant retraitement)
   //========================================================
   updateDisplayedData() {
     if (!this.selectedDate) {
@@ -110,10 +110,6 @@ export class SituationComponent {
     const totalVc = arr.reduce((sum, item) => sum + item.pdrTotalNetSum, 0);
     const totalVm = arr.reduce((sum, item) => sum + item.totalValoSum, 0);
 
-    // We'll build up finalRows, which includes:
-    // - a row for each item
-    // - after each class, a "Total" row + "Ratio" row
-    // - after everything, a "Total Portefeuille" row
     const finalRows: DisplayRow[] = [];
 
     let currentClass: number | null = null;
@@ -134,14 +130,16 @@ export class SituationComponent {
         isGrandTotal: false,
         date: this.selectedDate!,
         classe: currentClass,
-        categorieTitre: 'Total', // or blank
+        categorieTitre: 'Total',
         vc: classVcSum,
         vm: classVmSum,
         ratioVc: 0,
-        ratioVm: 0
+        ratioVm: 0,
+        apresVc: 0,
+        apresVm: 0
       });
 
-      // Then a "Ratio" row: ratio = classSum / total
+      // Then a "Ratio" row
       const ratioVc = totalVc ? classVcSum / totalVc : 0;
       const ratioVm = totalVm ? classVmSum / totalVm : 0;
       finalRows.push({
@@ -151,32 +149,30 @@ export class SituationComponent {
         isGrandTotal: false,
         date: this.selectedDate!,
         classe: currentClass,
-        categorieTitre: 'Ratio', // or blank
-        vc: 0,  // We'll store ratio in ratioVc/ ratioVm fields
+        categorieTitre: 'Ratio',
+        vc: 0,
         vm: 0,
         ratioVc,
-        ratioVm
+        ratioVm,
+        apresVc: 0,
+        apresVm: 0
       });
     };
 
-    // We'll iterate over arr. For each item, if item.numClasse changes,
-    // we finalize the old class group
+    // Build row for each item
     for (const item of arr) {
       if (currentClass === null) {
-        // first item
         currentClass = item.numClasse;
       } else if (item.numClasse !== currentClass) {
-        // new class => finalize old
         pushClassFooter();
 
-        // reset for the new class
+        // reset
         currentClass = item.numClasse;
         classItems = [];
         classVcSum = 0;
         classVmSum = 0;
       }
 
-      // add the row
       classItems.push(item);
       classVcSum += item.pdrTotalNetSum;
       classVmSum += item.totalValoSum;
@@ -192,14 +188,16 @@ export class SituationComponent {
         vc: item.pdrTotalNetSum,
         vm: item.totalValoSum,
         ratioVc: 0,
-        ratioVm: 0
+        ratioVm: 0,
+        // A l'initial, on met les colonnes "après" à 0
+        apresVc: 0,
+        apresVm: 0
       });
     }
-
-    // finalize the last class group
+    // final footer for the last class
     pushClassFooter();
 
-    // add a "Total Portefeuille" row
+    // add the "Total Portefeuille"
     finalRows.push({
       isItem: false,
       isClassTotal: false,
@@ -211,7 +209,9 @@ export class SituationComponent {
       vc: totalVc,
       vm: totalVm,
       ratioVc: 0,
-      ratioVm: 0
+      ratioVm: 0,
+      apresVc: 0,
+      apresVm: 0
     });
 
     this.displayedData = finalRows;
@@ -225,7 +225,6 @@ export class SituationComponent {
       alert('Select a date first');
       return;
     }
-
     this.router.navigate(['/transparisation'], {
       queryParams: {
         date: this.selectedDate,
@@ -235,7 +234,7 @@ export class SituationComponent {
   }
 
   //========================================================
-  // 5) "Transparise" – unchanged
+  // 5) "Transparise" – Add new rows for each _PB, _PR, _ACT
   //========================================================
   transpariseData() {
     if (!this.selectedDate) {
@@ -243,12 +242,50 @@ export class SituationComponent {
       return;
     }
     const url = `http://localhost:8080/api/transparisation/calculated/aggregate-by-categorie?date=${this.selectedDate}&ptf=${this.ptf}`;
+
     this.http.get<any[]>(url).subscribe(data => {
+      // On stocke la liste brute (logique existante)
       this.transpariseResults = this.transformData(data);
+
+      // On ajoute de nouvelles lignes dans displayedData pour chaque item
+      //   _PB => classe=1
+      //   _PR => classe=2
+      //   _ACT => classe=2
+      // Les colonnes "après retraitement" (apresVc, apresVm) sont prises depuis l'API
+      // Les colonnes "avant" (vc, vm) = 0 car c'est un nouvel item
+      for (const item of this.transpariseResults) {
+        let classe = 2; // par défaut
+        if (item.categorie.endsWith('_PB')) {
+          classe = 1;
+        }
+        // _PR => 2, _ACT => 2 => déjà fait
+
+        // On crée une nouvelle ligne
+        this.displayedData.push({
+          isItem: true,
+          isClassTotal: false,
+          isClassRatio: false,
+          isGrandTotal: false,
+          date: this.selectedDate!,
+          classe,
+          categorieTitre: item.categorie, // ou bien enlever le suffixe si nécessaire
+          vc: 0,
+          vm: 0,
+          ratioVc: 0,
+          ratioVm: 0,
+          apresVc: item.vc,
+          apresVm: item.vm
+        });
+      }
+
+      // Si vous voulez éventuellement réordonner après insertion
+      // (ex. par classe), vous pouvez le faire ici :
+      // this.displayedData.sort((a, b) => (a.classe ?? 999) - (b.classe ?? 999));
     });
   }
 
   private transformData(data: any[]): any[] {
+    // Logique déjà existante pour suffixer _PB, _PR, _ACT
     const results: any[] = [];
     data.forEach(item => {
       // DETTE PUB

@@ -11,5 +11,7 @@ public record CalculatedTransparisationDto(
         BigDecimal dettePrivVc,
         BigDecimal dettePrivVm,
         BigDecimal actionsVc,
-        BigDecimal actionsVm
+        BigDecimal actionsVm,
+        BigDecimal totalVM_before,  // <-- nouveau champ
+        BigDecimal totalVC_before   // <-- nouveau champ
 ) {}

@@ -38,25 +38,43 @@ public interface TransparisationRepository extends JpaRepository<Transparisation
 
 
     @Query(value = """
-    SELECT 
-        f.code,
-        f.description AS description,
-        t.categorie AS categorie,
 
-        ROUND((SUM(f.pdr_total_net) * t.dette_public)::numeric / 100, 2) AS dette_pub_vc,
-        ROUND((SUM(f.total_valo) * t.dette_public)::numeric / 100, 2) AS dette_pub_vm,
+            SELECT\s
+    f.code,
+    f.description AS description,
+    t.categorie AS categorie,
 
-        ROUND((SUM(f.pdr_total_net) * t.dette_privee)::numeric / 100, 2) AS dette_priv_vc,
-        ROUND((SUM(f.total_valo) * t.dette_privee)::numeric / 100, 2) AS dette_priv_vm,
+    /* Champs de la première requête */
+    ROUND((SUM(f.pdr_total_net) * t.dette_public)::numeric / 100, 2) AS dette_pub_vc,
+    ROUND((SUM(f.total_valo)     * t.dette_public)::numeric / 100, 2) AS dette_pub_vm,
+    ROUND((SUM(f.pdr_total_net) * t.dette_privee)::numeric / 100, 2) AS dette_priv_vc,
+    ROUND((SUM(f.total_valo)     * t.dette_privee)::numeric / 100, 2) AS dette_priv_vm,
+    ROUND((SUM(f.pdr_total_net) * t.action)::numeric / 100, 2)     AS actions_vc,
+    ROUND((SUM(f.total_valo)     * t.action)::numeric / 100, 2)     AS actions_vm,
 
-        ROUND((SUM(f.pdr_total_net) * t.action)::numeric / 100, 2) AS actions_vc,
-        ROUND((SUM(f.total_valo) * t.action)::numeric / 100, 2) AS actions_vm
+    /* Sous-requête pour totalVC_before et totalVM_before */
+    (SELECT SUM(f2.pdr_total_net)
+       FROM fiche_portefeuille f2
+      WHERE f2.code = f.code
+    ) AS totalVC_before,
 
-    FROM trans_tempo t
-    JOIN fiche_portefeuille f ON t.titre = f.code
-    WHERE f.date_position = :date AND f.ptf = :ptf
-    GROUP BY 
-         f.code, f.description, t.dette_public, t.dette_privee, t.action, t.categorie
+    (SELECT SUM(f2.total_valo)
+       FROM fiche_portefeuille f2
+      WHERE f2.code = f.code
+    ) AS totalVM_before
+
+FROM trans_tempo t
+JOIN fiche_portefeuille f ON t.titre = f.code
+WHERE f.date_position = :date
+  AND f.ptf = :ptf
+GROUP BY
+    f.code,
+    f.description,
+    t.categorie,
+    t.dette_public,
+    t.dette_privee,
+    t.action
+
 """, nativeQuery = true)
     List<CalculatedTransparisationDto> calculateByDateAndPtf(@Param("date") LocalDate date, @Param("ptf") String ptf);
 

@@ -22,7 +22,7 @@ public class BackendApplication implements CommandLineRunner {
             importExcelService.importExcel("C:/fpnouv2.xlsx");
             importExcelService.importReferentielTitreExcel("C:/referentiel_titre.xlsx");
             importExcelService.importTransparisation("C:/trans.xlsx");
-            importExcelService.importCategorie("C:/categorie.xlsx");
+            importExcelService.importCategorie("C:/cate.xlsx");
             System.out.println("All imports completed successfully.");
         } catch (Exception e) {
             System.err.println("❌ Failed to import Excel data: " + e.getMessage());

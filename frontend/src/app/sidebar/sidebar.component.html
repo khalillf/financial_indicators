@@ -1,0 +1,39 @@
+<div class="flex">
+  <!-- Fixed Sidebar -->
+  <div class="fixed top-0 left-0 bg-gray-800 text-white w-64 h-screen p-4 overflow-y-auto z-50">
+    <!-- Sidebar content (unchanged) -->
+    <div
+      *ngFor="let section of sections"
+      class="mb-4 border-b border-gray-700 last:border-b-0"
+    >
+      <div
+        class="flex items-center justify-between p-2 cursor-pointer hover:bg-gray-700"
+        (click)="toggleSection(section)"
+      >
+        <div class="flex items-center gap-2">
+          <i [class]="section.icon"></i>
+          <span class="font-semibold">{{ section.label }}</span>
+        </div>
+        <i
+          class="fa-solid"
+          [class.fa-chevron-down]="section.expanded"
+          [class.fa-chevron-right]="!section.expanded"
+        ></i>
+      </div>
+
+      <ul *ngIf="section.expanded" class="bg-gray-700">
+        <li *ngFor="let item of section.items">
+          <a
+            [routerLink]="item.route"
+            class="block px-6 py-2 hover:bg-gray-600 flex items-center gap-2"
+          >
+            <i [class]="item.icon"></i>
+            <span>{{ item.label }}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+
+</div>

@@ -1,1 +1,9 @@
-<router-outlet></router-outlet>
+<div class="flex">
+  <!-- Sidebar (already fixed in its own component) -->
+  <app-sidebar></app-sidebar>
+
+  <!-- Main Content (router-outlet) with left margin to avoid overlap) -->
+  <div class="ml-64 w-full">
+    <router-outlet></router-outlet>
+  </div>
+</div>

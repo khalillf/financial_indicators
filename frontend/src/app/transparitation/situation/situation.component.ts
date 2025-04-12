@@ -11,6 +11,7 @@ interface OldDataItem {
   numClasse: number;
   totalValoSum: number;    // we'll treat as "VM"
   pdrTotalNetSum: number;  // we'll treat as "VC"
+  isTransparise?: boolean;
 }
 
 // For building the final table rows (including class totals & ratio rows)
@@ -33,6 +34,8 @@ interface DisplayRow {
   // Après retraitement (initialement 0 ou undefined)
   apresVc?: number;
   apresVm?: number;
+
+  isTransparise?: boolean;
 }
 
 @Component({
@@ -91,130 +94,144 @@ export class SituationComponent {
   // 3) Build a table for the selected date (avant retraitement)
   //========================================================
   updateDisplayedData() {
-    if (!this.selectedDate) {
-      this.displayedData = [];
-      return;
-    }
+    this.displayedData = [];
 
-    // Grab the array of items for the selected date
-    const arr: OldDataItem[] = this.rawData[this.selectedDate] || [];
-    if (!arr.length) {
-      this.displayedData = [];
-      return;
-    }
+    const sortedDates = Object.keys(this.rawData).sort();
 
-    // 1) Sort them by numClasse ascending
-    arr.sort((a, b) => a.numClasse - b.numClasse);
+    for (const date of sortedDates) {
+      const arr: OldDataItem[] = this.rawData[date] || [];
+      if (!arr.length) continue;
 
-    // 2) Compute the date's total VC/VM to find ratio
-    const totalVc = arr.reduce((sum, item) => sum + item.pdrTotalNetSum, 0);
-    const totalVm = arr.reduce((sum, item) => sum + item.totalValoSum, 0);
+      // 1) Sort by class
+      arr.sort((a, b) => a.numClasse - b.numClasse);
 
-    const finalRows: DisplayRow[] = [];
+      // 2) Compute total VC/VM for “Avant” only
+      const totalVcAvant = arr.reduce((sum, item) => {
+        return !item.isTransparise ? sum + item.pdrTotalNetSum : sum;
+      }, 0);
+      const totalVmAvant = arr.reduce((sum, item) => {
+        return !item.isTransparise ? sum + item.totalValoSum : sum;
+      }, 0);
 
-    let currentClass: number | null = null;
-    let classItems: OldDataItem[] = [];
-    let classVcSum = 0;
-    let classVmSum = 0;
+      let currentClass: number | null = null;
+      let classItems: OldDataItem[] = [];
+      let classVcSumAvant = 0;
+      let classVmSumAvant = 0;
 
-    // Helper to push the class total + ratio rows
-    const pushClassFooter = () => {
-      if (classItems.length === 0) return;
-      if (currentClass === null) return;
+      // pushClassFooter will create the "Total" row & "Ratio" row for that class
+      const pushClassFooter = () => {
+        if (!classItems.length || currentClass === null) return;
 
-      // Build the "Total" row for this class
-      finalRows.push({
-        isItem: false,
-        isClassTotal: true,
-        isClassRatio: false,
-        isGrandTotal: false,
-        date: this.selectedDate!,
-        classe: currentClass,
-        categorieTitre: 'Total',
-        vc: classVcSum,
-        vm: classVmSum,
-        ratioVc: 0,
-        ratioVm: 0,
-        apresVc: 0,
-        apresVm: 0
-      });
+        // 1) "Total" row for that class, based on the sums of only “avant” items
+        this.displayedData.push({
+          isItem: false,
+          isClassTotal: true,
+          isClassRatio: false,
+          isGrandTotal: false,
+          date,
+          classe: currentClass,
+          categorieTitre: 'Total',
+          vc: classVcSumAvant,
+          vm: classVmSumAvant,
+          ratioVc: 0,
+          ratioVm: 0,
+          apresVc: 0,
+          apresVm: 0,
+          isTransparise: false
+        });
 
-      // Then a "Ratio" row
-      const ratioVc = totalVc ? classVcSum / totalVc : 0;
-      const ratioVm = totalVm ? classVmSum / totalVm : 0;
-      finalRows.push({
-        isItem: false,
-        isClassTotal: false,
-        isClassRatio: true,
-        isGrandTotal: false,
-        date: this.selectedDate!,
-        classe: currentClass,
-        categorieTitre: 'Ratio',
-        vc: 0,
-        vm: 0,
-        ratioVc,
-        ratioVm,
-        apresVc: 0,
-        apresVm: 0
-      });
-    };
+        // 2) Ratio row
+        const ratioVc = totalVcAvant ? classVcSumAvant / totalVcAvant : 0;
+        const ratioVm = totalVmAvant ? classVmSumAvant / totalVmAvant : 0;
 
-    // Build row for each item
-    for (const item of arr) {
-      if (currentClass === null) {
-        currentClass = item.numClasse;
-      } else if (item.numClasse !== currentClass) {
-        pushClassFooter();
+        this.displayedData.push({
+          isItem: false,
+          isClassTotal: false,
+          isClassRatio: true,
+          isGrandTotal: false,
+          date,
+          classe: currentClass,
+          categorieTitre: 'Ratio',
+          vc: 0,
+          vm: 0,
+          ratioVc,
+          ratioVm,
+          apresVc: 0,
+          apresVm: 0,
+          isTransparise: false
+        });
+      };
 
-        // reset
-        currentClass = item.numClasse;
-        classItems = [];
-        classVcSum = 0;
-        classVmSum = 0;
+      // 3) Loop through all items (both avant & après)
+      for (const item of arr) {
+        if (currentClass === null) {
+          currentClass = item.numClasse;
+        } else if (item.numClasse !== currentClass) {
+          // finalize the old class’s total/ratio rows
+          pushClassFooter();
+
+          // start a new class
+          currentClass = item.numClasse;
+          classItems = [];
+          classVcSumAvant = 0;
+          classVmSumAvant = 0;
+        }
+
+        classItems.push(item);
+
+        // For the “avant” columns, only sum if item is NOT transparised
+        if (!item.isTransparise) {
+          classVcSumAvant += item.pdrTotalNetSum;
+          classVmSumAvant += item.totalValoSum;
+        }
+
+        // Decide how to fill Avant vs Après columns for each row
+        const isT = item.isTransparise;
+        const avantVc = isT ? 0 : item.pdrTotalNetSum;
+        const avantVm = isT ? 0 : item.totalValoSum;
+        const apresVc = isT ? item.pdrTotalNetSum : 0;
+        const apresVm = isT ? item.totalValoSum : 0;
+
+        // Add the row
+        this.displayedData.push({
+          isItem: true,
+          isClassTotal: false,
+          isClassRatio: false,
+          isGrandTotal: false,
+          date,
+          classe: item.numClasse,
+          categorieTitre: item.categorieTitre,
+          vc: avantVc,
+          vm: avantVm,
+          ratioVc: 0,
+          ratioVm: 0,
+          apresVc,
+          apresVm,
+          isTransparise: !!item.isTransparise
+        });
       }
 
-      classItems.push(item);
-      classVcSum += item.pdrTotalNetSum;
-      classVmSum += item.totalValoSum;
+      // 4) finalize the last class
+      pushClassFooter();
 
-      finalRows.push({
-        isItem: true,
+      // 5) “Grand Total” row for the date (ONLY “avant” amounts in the VC/VM columns)
+      this.displayedData.push({
+        isItem: false,
         isClassTotal: false,
         isClassRatio: false,
-        isGrandTotal: false,
-        date: this.selectedDate!,
-        classe: item.numClasse,
-        categorieTitre: item.categorieTitre,
-        vc: item.pdrTotalNetSum,
-        vm: item.totalValoSum,
+        isGrandTotal: true,
+        date,
+        classe: null,
+        categorieTitre: 'Total Portefeuille',
+        vc: totalVcAvant,   // Only the non-transparise items
+        vm: totalVmAvant,
         ratioVc: 0,
         ratioVm: 0,
-        // A l'initial, on met les colonnes "après" à 0
         apresVc: 0,
-        apresVm: 0
+        apresVm: 0,
+        isTransparise: false
       });
     }
-    // final footer for the last class
-    pushClassFooter();
-
-    // add the "Total Portefeuille"
-    finalRows.push({
-      isItem: false,
-      isClassTotal: false,
-      isClassRatio: false,
-      isGrandTotal: true,
-      date: this.selectedDate!,
-      classe: null,
-      categorieTitre: 'Total Portefeuille',
-      vc: totalVc,
-      vm: totalVm,
-      ratioVc: 0,
-      ratioVm: 0,
-      apresVc: 0,
-      apresVm: 0
-    });
-
-    this.displayedData = finalRows;
   }
 
   //========================================================
@@ -237,51 +254,44 @@ export class SituationComponent {
   // 5) "Transparise" – Add new rows for each _PB, _PR, _ACT
   //========================================================
   transpariseData() {
-    if (!this.selectedDate) {
-      alert('Please select a date first!');
+    if (!this.dateImage || !this.dateImageFin || !this.ptf) {
+      alert('Please fill in all fields.');
       return;
     }
-    const url = `http://localhost:8080/api/transparisation/calculated/aggregate-by-categorie?date=${this.selectedDate}&ptf=${this.ptf}`;
 
-    this.http.get<any[]>(url).subscribe(data => {
-      // On stocke la liste brute (logique existante)
-      this.transpariseResults = this.transformData(data);
+    const sortedDates = Object.keys(this.rawData).sort();
 
-      // On ajoute de nouvelles lignes dans displayedData pour chaque item
-      //   _PB => classe=1
-      //   _PR => classe=2
-      //   _ACT => classe=2
-      // Les colonnes "après retraitement" (apresVc, apresVm) sont prises depuis l'API
-      // Les colonnes "avant" (vc, vm) = 0 car c'est un nouvel item
-      for (const item of this.transpariseResults) {
-        let classe = 2; // par défaut
-        if (item.categorie.endsWith('_PB')) {
-          classe = 1;
-        }
-        // _PR => 2, _ACT => 2 => déjà fait
+    for (const date of sortedDates) {
+      const url = `http://localhost:8080/api/transparisation/calculated/aggregate-by-categorie?date=${date}&ptf=${this.ptf}`;
 
-        // On crée une nouvelle ligne
-        this.displayedData.push({
-          isItem: true,
-          isClassTotal: false,
-          isClassRatio: false,
-          isGrandTotal: false,
-          date: this.selectedDate!,
-          classe,
-          categorieTitre: item.categorie, // ou bien enlever le suffixe si nécessaire
-          vc: 0,
-          vm: 0,
-          ratioVc: 0,
-          ratioVm: 0,
-          apresVc: item.vc,
-          apresVm: item.vm
+      this.http.get<any[]>(url).subscribe(data => {
+        const transformed = this.transformData(data);
+
+        // Build OldDataItem entries for each new row
+        const newItems: OldDataItem[] = transformed.map(item => {
+          let classe = 2;
+          if (item.categorie.endsWith('_PB')) classe = 1;
+          if (item.categorie.endsWith('_ACT')) classe = 3;
+
+          return {
+            categorieTitre: item.categorie,
+            numClasse: classe,
+            totalValoSum: item.vm,
+            pdrTotalNetSum: item.vc,
+            isTransparise: true  // mark them
+          };
         });
-      }
 
-      // Si vous voulez éventuellement réordonner après insertion
-      // (ex. par classe), vous pouvez le faire ici :
-      // this.displayedData.sort((a, b) => (a.classe ?? 999) - (b.classe ?? 999));
-    });
+        // Merge them into rawData for this date
+        this.rawData[date] = [
+          ...this.rawData[date],
+          ...newItems
+        ];
+
+        // Now regenerate the table with aggregator logic
+        this.updateDisplayedData();
+      });
+    }
   }
 
   private transformData(data: any[]): any[] {

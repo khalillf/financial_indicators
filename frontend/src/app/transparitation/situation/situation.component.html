@@ -1,0 +1,152 @@
+<!-- file: src/app/transparisation/situation/situation.component.html -->
+<div class="p-4 bg-white rounded shadow">
+  <h2 class="text-xl font-bold mb-4">Search Situation</h2>
+
+  <!-- Inputs -->
+  <div class="flex flex-col md:flex-row gap-4 mb-4">
+    <input [(ngModel)]="ptf" type="text" placeholder="PTF" class="p-2 border rounded w-full md:w-1/3" />
+    <input [(ngModel)]="dateImage" type="date" class="p-2 border rounded w-full md:w-1/3" />
+    <input [(ngModel)]="dateImageFin" type="date" class="p-2 border rounded w-full md:w-1/3" />
+  </div>
+
+  <!-- Buttons -->
+  <button (click)="goToTransparisation()" class="p-2 bg-blue-600 text-white rounded hover:bg-blue-700 mb-4">
+    Go to Transparisation
+  </button>
+
+  <button (click)="fetchData()" class="p-2 bg-green-600 text-white rounded hover:bg-green-700 w-full md:w-auto mb-4">
+    calculer avant traitement
+  </button>
+
+  <!-- Available dates (unchanged) -->
+  <div *ngIf="availableDates.length > 0" class="mb-4">
+    <div class="flex flex-wrap gap-2">
+      <button
+        *ngFor="let date of availableDates"
+        (click)="selectDate(date)"
+        [ngClass]="{
+          'bg-blue-600 hover:bg-blue-700': date !== selectedDate,
+          'bg-green-600': date === selectedDate
+        }"
+        class="px-4 py-2 rounded text-white"
+      >
+        {{ date }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Table Title -->
+  <div *ngIf="selectedDate" class="text-sm mb-2">
+    Showing data for: <strong>{{ selectedDate }}</strong>
+  </div>
+
+  <!-- MAIN TABLE (with grouping, totals, ratio, and Date column) -->
+  <table class="min-w-full text-sm text-left border-collapse border border-gray-300" *ngIf="displayedData.length">
+    <thead class="bg-gray-100">
+    <tr>
+      <th class="border px-4 py-2">Date</th>
+      <th class="border px-4 py-2">Classe</th>
+      <th class="border px-4 py-2">Catégorie</th>
+      <th class="border px-4 py-2">VC</th>
+      <th class="border px-4 py-2">VM</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- We loop over displayedData, which includes item rows,
+         class total rows, ratio rows, and the grand total row. -->
+    <tr *ngFor="let row of displayedData"
+        [ngClass]="{
+            'bg-orange-100 font-semibold': row.isClassTotal,
+            'bg-orange-50 italic': row.isClassRatio,
+            'bg-blue-100 font-bold': row.isGrandTotal
+          }"
+    >
+      <!-- Date column -->
+      <td class="border px-4 py-2">
+        {{ row.date }}
+      </td>
+
+      <!-- Classe column -->
+      <td class="border px-4 py-2">
+        <!-- If it's an item or total row, show "Classe #",
+             If grand total, maybe empty
+        -->
+        <ng-container *ngIf="!row.isGrandTotal">
+          Classe {{ row.classe }}
+        </ng-container>
+      </td>
+
+      <!-- Catégorie column -->
+      <td class="border px-4 py-2">
+        <!-- item row => row.categorieTitre,
+             class total => "Total",
+             class ratio => "Ratio",
+             grand total => "Total Portefeuille"
+        -->
+        {{ row.categorieTitre }}
+      </td>
+
+      <!-- VC column -->
+      <td class="border px-4 py-2">
+        <!-- if ratio row, we show (row.ratioVc * 100)% in red?
+             else show row.vc
+        -->
+        <ng-container *ngIf="row.isClassRatio; else normalVc">
+            <span style="color: red;">
+              {{ (row.ratioVc * 100) | number:'1.2-2' }}%
+            </span>
+        </ng-container>
+        <ng-template #normalVc>
+          {{ row.vc | number:'1.2-2' }}
+        </ng-template>
+      </td>
+
+      <!-- VM column -->
+      <td class="border px-4 py-2">
+        <ng-container *ngIf="row.isClassRatio; else normalVm">
+            <span style="color: red;">
+              {{ (row.ratioVm * 100) | number:'1.2-2' }}%
+            </span>
+        </ng-container>
+        <ng-template #normalVm>
+          {{ row.vm | number:'1.2-2' }}
+        </ng-template>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="selectedDate && !displayedData.length">
+    <p class="text-gray-500">No data available for {{ selectedDate }}</p>
+  </div>
+
+  <!-- "Transparise" button -->
+  <div class="mt-4">
+    <button (click)="transpariseData()" class="p-2 bg-purple-600 text-white rounded hover:bg-purple-700">
+      Transparise
+    </button>
+  </div>
+
+  <!-- Table for the transformed "transparise" results (unchanged) -->
+  <table class="min-w-full text-sm text-left border-collapse border border-gray-300 mt-4"
+         *ngIf="transpariseResults.length">
+    <thead class="bg-gray-100">
+    <tr>
+      <th class="border px-4 py-2">Catégorie transformée</th>
+      <th class="border px-4 py-2">VC</th>
+      <th class="border px-4 py-2">VM</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let row of transpariseResults">
+      <td class="border px-4 py-2">{{ row.categorie }}</td>
+      <td class="border px-4 py-2">{{ row.vc | number:'1.2-2' }}</td>
+      <td class="border px-4 py-2">{{ row.vm | number:'1.2-2' }}</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="transpariseResults && !transpariseResults.length">
+    <p class="text-gray-500">No transparise data available yet.</p>
+  </div>
+</div>

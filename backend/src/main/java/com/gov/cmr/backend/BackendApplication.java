@@ -19,10 +19,10 @@ public class BackendApplication implements CommandLineRunner {
     @Override
     public void run(String... args) {
         try {
-            importExcelService.importExcel("C:/fpnouv2.xlsx");
-            importExcelService.importReferentielTitreExcel("C:/referentiel_titre.xlsx");
-            importExcelService.importTransparisation("C:/trans.xlsx");
-            importExcelService.importCategorie("C:/cate.xlsx");
+            importExcelService.importExcel("X:/CMR_insert/fpnouv.xlsx");
+            importExcelService.importReferentielTitreExcel("X:/CMR_insert/referentiel_titre.xlsx");
+            importExcelService.importTransparisation("X:/CMR_insert/trans.xlsx");
+            importExcelService.importCategorie("X:/CMR_insert/Categorie.xlsx");
             System.out.println("All imports completed successfully.");
         } catch (Exception e) {
             System.err.println("❌ Failed to import Excel data: " + e.getMessage());

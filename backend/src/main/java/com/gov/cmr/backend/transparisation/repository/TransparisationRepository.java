@@ -26,7 +26,7 @@ public interface TransparisationRepository extends JpaRepository<Transparisation
         t.action
     )
     FROM Transparisation t
-    WHERE :targetDate BETWEEN t.dateImage AND t.dateImageFin
+    WHERE :targetDate >= t.dateImage AND :targetDate < t.dateImageFin
       AND t.dettePrivee IS NOT NULL
       AND t.dettePublic IS NOT NULL
       AND t.action IS NOT NULL
@@ -38,35 +38,34 @@ public interface TransparisationRepository extends JpaRepository<Transparisation
 
 
     @Query(value = """
-
-            SELECT\s
+SELECT
     f.code,
     f.description AS description,
     t.categorie AS categorie,
 
-    /* Champs de la première requête */
+    -- Calculated Fields
     ROUND((SUM(f.pdr_total_net) * t.dette_public)::numeric / 100, 2) AS dette_pub_vc,
     ROUND((SUM(f.total_valo)     * t.dette_public)::numeric / 100, 2) AS dette_pub_vm,
     ROUND((SUM(f.pdr_total_net) * t.dette_privee)::numeric / 100, 2) AS dette_priv_vc,
     ROUND((SUM(f.total_valo)     * t.dette_privee)::numeric / 100, 2) AS dette_priv_vm,
-    ROUND((SUM(f.pdr_total_net) * t.action)::numeric / 100, 2)     AS actions_vc,
-    ROUND((SUM(f.total_valo)     * t.action)::numeric / 100, 2)     AS actions_vm,
+    ROUND((SUM(f.pdr_total_net) * t.action)::numeric / 100, 2)         AS actions_vc,
+    ROUND((SUM(f.total_valo)     * t.action)::numeric / 100, 2)         AS actions_vm,
 
-    /* Sous-requête pour totalVC_before et totalVM_before */
+    -- Totals
     (SELECT SUM(f2.pdr_total_net)
-       FROM fiche_portefeuille f2
-      WHERE f2.code = f.code
-    ) AS totalVC_before,
+     FROM fiche_portefeuille f2
+     WHERE f2.code = f.code) AS totalVC_before,
 
     (SELECT SUM(f2.total_valo)
-       FROM fiche_portefeuille f2
-      WHERE f2.code = f.code
-    ) AS totalVM_before
+     FROM fiche_portefeuille f2
+     WHERE f2.code = f.code) AS totalVM_before
 
-FROM trans_tempo t
-JOIN fiche_portefeuille f ON t.titre = f.code
+FROM fiche_portefeuille f
+JOIN transparisation t ON t.titre = f.code
 WHERE f.date_position = :date
   AND f.ptf = :ptf
+  AND :date >= t.date_image
+  AND :date < t.date_image_fin
 GROUP BY
     f.code,
     f.description,
@@ -74,6 +73,15 @@ GROUP BY
     t.dette_public,
     t.dette_privee,
     t.action
+
+HAVING
+    ROUND((SUM(f.pdr_total_net) * t.dette_public)::numeric / 100, 2) IS NOT NULL OR
+    ROUND((SUM(f.total_valo)     * t.dette_public)::numeric / 100, 2) IS NOT NULL OR
+    ROUND((SUM(f.pdr_total_net) * t.dette_privee)::numeric / 100, 2) IS NOT NULL OR
+    ROUND((SUM(f.total_valo)     * t.dette_privee)::numeric / 100, 2) IS NOT NULL OR
+    ROUND((SUM(f.pdr_total_net) * t.action)::numeric / 100, 2) IS NOT NULL OR
+    ROUND((SUM(f.total_valo)     * t.action)::numeric / 100, 2) IS NOT NULL;
+
 
 """, nativeQuery = true)
     List<CalculatedTransparisationDto> calculateByDateAndPtf(@Param("date") LocalDate date, @Param("ptf") String ptf);

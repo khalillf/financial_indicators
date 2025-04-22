@@ -15,19 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface FichePortefeuilleRepository extends JpaRepository<FichePortefeuille, Integer> {
 
-    @Modifying
+
     @Transactional
-    @Query("""
-        UPDATE FichePortefeuille fp
-        SET 
-            fp.categorie_titre = (
-                SELECT rt.categorie FROM ReferentielTitre rt WHERE rt.code = fp.code
-            ),
-            fp.emetteur = (
-                SELECT rt.emetteur FROM ReferentielTitre rt WHERE rt.code = fp.code
-            )
-        WHERE fp.code IN (SELECT rt.code FROM ReferentielTitre rt)
-    """)
+    @Modifying
+    @Query(value = """
+    UPDATE Fiche_Portefeuille fp
+    SET 
+        categorie_titre = rt.categorie,
+        emetteur = rt.emetteur
+    FROM Referentiel_Titre rt
+    WHERE fp.description = rt.description
+""", nativeQuery = true)
     void updateCategorieAndEmetteurFromReferentiel();
 
 

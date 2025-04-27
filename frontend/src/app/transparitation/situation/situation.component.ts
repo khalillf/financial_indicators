@@ -1,39 +1,41 @@
-// file: src/app/transparisation/situation/situation.component.ts
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-// The items returned by the aggregator
+/* ---------- internal types ---------- */
 interface OldDataItem {
   categorieTitre: string;
   numClasse: number;
-  totalValoSum: number;    // we'll treat as "VM"
-  pdrTotalNetSum: number;  // we'll treat as "VC"
+  totalValoSum: number;   // VM
+  pdrTotalNetSum: number; // VC
   isTransparise?: boolean;
 }
 
-// For building the final table rows (including class totals & ratio rows)
 interface DisplayRow {
-  isItem: boolean;         // is it a normal item row?
-  isClassTotal: boolean;   // is it the "Total" row for a class?
-  isClassRatio: boolean;   // is it the "Ratio" row for that class?
-  isGrandTotal: boolean;   // is it the "Total Portefeuille" row?
+  /* flags */
+  isItem: boolean;
+  isClassTotal: boolean;
+  isClassRatio: boolean;
+  isGrandTotal: boolean;
 
+  /* id */
   date: string;
-  classe: number | null;   // if it's an item, we store the class
-  categorieTitre: string;  // e.g. "Bons émis par Adjudication", or "Total", or blank
+  classe: number | null;
+  categorieTitre: string;
 
-  // Avant retraitement
-  vc: number;              // "pdrTotalNetSum"
-  vm: number;              // "totalValoSum"
+  /* Avant */
+  vc: number;
+  vm: number;
   ratioVc: number;
   ratioVm: number;
 
-  // Après retraitement (initialement 0 ou undefined)
-  apresVc?: number;
-  apresVm?: number;
+  /* Après */
+  apresVc: number;
+  apresVm: number;
+  ratioApresVc?: number;  // NEW
+  ratioApresVm?: number;  // NEW
 
   isTransparise?: boolean;
 }
@@ -43,178 +45,211 @@ interface DisplayRow {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './situation.component.html',
-  styleUrls: ['./situation.component.css']
+  styleUrls: ['./situation.component.css'],
 })
 export class SituationComponent {
+  /* DI */
   private http = inject(HttpClient);
   private router = inject(Router);
 
+  /* form inputs */
   ptf = '';
   dateImage = '';
   dateImageFin = '';
 
-  // The aggregator data: { [dateString]: OldDataItem[] }
-  rawData: any = {};
+  /* data */
+  rawData: Record<string, OldDataItem[]> = {};
   availableDates: string[] = [];
   selectedDate: string | null = null;
 
-  // The final table rows (after grouping, summing, etc.)
   displayedData: DisplayRow[] = [];
 
-  // The “Transparise” results, shown in the second table (if you keep it)
-  transpariseResults: any[] = [];
-
-  //========================================================
-  // 1) Existing method: fetch aggregator data
-  //========================================================
-  fetchData() {
+  /* =========================================================
+     1) fetch original (“avant”) aggregates
+     ========================================================= */
+  fetchData(): void {
     if (!this.ptf || !this.dateImage || !this.dateImageFin) {
       alert('Please fill in all fields.');
       return;
     }
-
     const url = `http://localhost:8080/api/fiche-portefeuille/aggregate?start=${this.dateImage}&end=${this.dateImageFin}&ptf=${this.ptf}`;
-    this.http.get<any>(url).subscribe(data => {
+    this.http.get<Record<string, OldDataItem[]>>(url).subscribe((data) => {
       this.rawData = data;
       this.availableDates = Object.keys(data);
-      this.selectedDate = this.availableDates[0] || null;
+      this.selectedDate = this.availableDates[0] ?? null;
       this.updateDisplayedData();
     });
   }
 
-  //========================================================
-  // 2) Switch selected date
-  //========================================================
-  selectDate(date: string) {
-    this.selectedDate = date;
+  /* =========================================================
+     2) pick a date
+     ========================================================= */
+  selectDate(d: string): void {
+    this.selectedDate = d;
     this.updateDisplayedData();
   }
 
-  //========================================================
-  // 3) Build a table for the selected date (avant retraitement)
-  //========================================================
-  updateDisplayedData() {
+  /* =========================================================
+     3) build rows with correct Avant & Après ratios
+     ========================================================= */
+  /* =========================================================
+     3) Build rows with correct Avant & Après ratios
+     ========================================================= */
+  updateDisplayedData(): void {
     this.displayedData = [];
 
-    const sortedDates = Object.keys(this.rawData).sort();
-
-    for (const date of sortedDates) {
-      const arr: OldDataItem[] = this.rawData[date] || [];
+    /* iterate every portfolio-date chronologically */
+    for (const date of Object.keys(this.rawData).sort()) {
+      const arr: OldDataItem[] = this.rawData[date] ?? [];
       if (!arr.length) continue;
 
-      // 1) Sort by class
-      arr.sort((a, b) => a.numClasse - b.numClasse);
+      /* ---------- PASS #1 – prepare helpers & day totals ---------- */
 
-      // 2) Compute total VC/VM for “Avant” only
-      const totalVcAvant = arr.reduce((sum, item) => {
-        return !item.isTransparise ? sum + item.pdrTotalNetSum : sum;
-      }, 0);
-      const totalVmAvant = arr.reduce((sum, item) => {
-        return !item.isTransparise ? sum + item.totalValoSum : sum;
-      }, 0);
+      /* 1-a  gather transparised buckets */
+      const buckets = new Map<string, { vc: number; vm: number }>();
+      arr.forEach((it) => {
+        if (it.isTransparise) {
+          const base = it.categorieTitre.replace(/_(PB|PR|ACT)$/i, '');
+          const b = buckets.get(base) ?? { vc: 0, vm: 0 };
+          b.vc += it.pdrTotalNetSum;
+          b.vm += it.totalValoSum;
+          buckets.set(base, b);
+        }
+      });
 
-      let currentClass: number | null = null;
-      let classItems: OldDataItem[] = [];
-      let classVcSumAvant = 0;
-      let classVmSumAvant = 0;
+      /* 1-b  compute day-level Avant & Après totals */
+      let dayAvantVc = 0,
+        dayAvantVm = 0,
+        dayApresVc = 0,
+        dayApresVm = 0;
 
-      // pushClassFooter will create the "Total" row & "Ratio" row for that class
-      const pushClassFooter = () => {
-        if (!classItems.length || currentClass === null) return;
+      arr.forEach((it) => {
+        /* Avant adds only non-transparised rows */
+        if (!it.isTransparise) {
+          dayAvantVc += it.pdrTotalNetSum;
+          dayAvantVm += it.totalValoSum;
+        }
 
-        // 1) "Total" row for that class, based on the sums of only “avant” items
+        /* Après */
+        if (it.isTransparise) {
+          dayApresVc += it.pdrTotalNetSum;
+          dayApresVm += it.totalValoSum;
+        } else {
+          const bucket = buckets.get(it.categorieTitre);
+          dayApresVc += it.pdrTotalNetSum - (bucket?.vc ?? 0);
+          dayApresVm += it.totalValoSum - (bucket?.vm ?? 0);
+        }
+      });
+
+      /* ---------- PASS #2 – emit item rows, class totals & ratios ---------- */
+
+      /* sort by class then categorie */
+      arr.sort(
+        (a, b) =>
+          a.numClasse - b.numClasse ||
+          a.categorieTitre.localeCompare(b.categorieTitre),
+      );
+
+      let curClass: number | null = null;
+      let clsAvantVc = 0,
+        clsAvantVm = 0,
+        clsApresVc = 0,
+        clsApresVm = 0;
+
+      const flush = () => {
+        if (curClass === null) return;
+
+        /* total row */
         this.displayedData.push({
           isItem: false,
           isClassTotal: true,
           isClassRatio: false,
           isGrandTotal: false,
           date,
-          classe: currentClass,
+          classe: curClass,
           categorieTitre: 'Total',
-          vc: classVcSumAvant,
-          vm: classVmSumAvant,
+          vc: clsAvantVc,
+          vm: clsAvantVm,
           ratioVc: 0,
           ratioVm: 0,
-          apresVc: 0,
-          apresVm: 0,
-          isTransparise: false
+          apresVc: clsApresVc,
+          apresVm: clsApresVm,
         });
 
-        // 2) Ratio row
-        const ratioVc = totalVcAvant ? classVcSumAvant / totalVcAvant : 0;
-        const ratioVm = totalVmAvant ? classVmSumAvant / totalVmAvant : 0;
-
+        /* ratio row */
         this.displayedData.push({
           isItem: false,
           isClassTotal: false,
           isClassRatio: true,
           isGrandTotal: false,
           date,
-          classe: currentClass,
+          classe: curClass,
           categorieTitre: 'Ratio',
           vc: 0,
           vm: 0,
-          ratioVc,
-          ratioVm,
+          ratioVc: dayAvantVc ? clsAvantVc / dayAvantVc : 0,
+          ratioVm: dayAvantVm ? clsAvantVm / dayAvantVm : 0,
           apresVc: 0,
           apresVm: 0,
-          isTransparise: false
+          ratioApresVc: dayApresVc ? clsApresVc / dayApresVc : 0,
+          ratioApresVm: dayApresVm ? clsApresVm / dayApresVm : 0,
         });
       };
 
-      // 3) Loop through all items (both avant & après)
-      for (const item of arr) {
-        if (currentClass === null) {
-          currentClass = item.numClasse;
-        } else if (item.numClasse !== currentClass) {
-          // finalize the old class’s total/ratio rows
-          pushClassFooter();
-
-          // start a new class
-          currentClass = item.numClasse;
-          classItems = [];
-          classVcSumAvant = 0;
-          classVmSumAvant = 0;
+      /* item rows */
+      for (const it of arr) {
+        /* class change */
+        if (curClass === null) curClass = it.numClasse;
+        if (it.numClasse !== curClass) {
+          flush();
+          curClass = it.numClasse;
+          clsAvantVc = clsAvantVm = clsApresVc = clsApresVm = 0;
         }
 
-        classItems.push(item);
+        /* Avant values */
+        const avantVc = it.isTransparise ? 0 : it.pdrTotalNetSum;
+        const avantVm = it.isTransparise ? 0 : it.totalValoSum;
 
-        // For the “avant” columns, only sum if item is NOT transparised
-        if (!item.isTransparise) {
-          classVcSumAvant += item.pdrTotalNetSum;
-          classVmSumAvant += item.totalValoSum;
+        /* Après values */
+        let apresVc: number;
+        let apresVm: number;
+        if (it.isTransparise) {
+          apresVc = it.pdrTotalNetSum;
+          apresVm = it.totalValoSum;
+        } else {
+          const bucket = buckets.get(it.categorieTitre);
+          apresVc = it.pdrTotalNetSum - (bucket?.vc ?? 0);
+          apresVm = it.totalValoSum - (bucket?.vm ?? 0);
         }
 
-        // Decide how to fill Avant vs Après columns for each row
-        const isT = item.isTransparise;
-        const avantVc = isT ? 0 : item.pdrTotalNetSum;
-        const avantVm = isT ? 0 : item.totalValoSum;
-        const apresVc = isT ? item.pdrTotalNetSum : 0;
-        const apresVm = isT ? item.totalValoSum : 0;
+        /* accumulate class */
+        clsAvantVc += avantVc;
+        clsAvantVm += avantVm;
+        clsApresVc += apresVc;
+        clsApresVm += apresVm;
 
-        // Add the row
+        /* push item row */
         this.displayedData.push({
           isItem: true,
           isClassTotal: false,
           isClassRatio: false,
           isGrandTotal: false,
           date,
-          classe: item.numClasse,
-          categorieTitre: item.categorieTitre,
+          classe: it.numClasse,
+          categorieTitre: it.categorieTitre,
           vc: avantVc,
           vm: avantVm,
           ratioVc: 0,
           ratioVm: 0,
           apresVc,
           apresVm,
-          isTransparise: !!item.isTransparise
+          isTransparise: !!it.isTransparise,
         });
       }
+      /* flush last class */
+      flush();
 
-      // 4) finalize the last class
-      pushClassFooter();
-
-      // 5) “Grand Total” row for the date (ONLY “avant” amounts in the VC/VM columns)
+      /* grand total row */
       this.displayedData.push({
         isItem: false,
         isClassTotal: false,
@@ -223,106 +258,79 @@ export class SituationComponent {
         date,
         classe: null,
         categorieTitre: 'Total Portefeuille',
-        vc: totalVcAvant,   // Only the non-transparise items
-        vm: totalVmAvant,
+        vc: dayAvantVc,
+        vm: dayAvantVm,
         ratioVc: 0,
         ratioVm: 0,
-        apresVc: 0,
-        apresVm: 0,
-        isTransparise: false
+        apresVc: dayApresVc,
+        apresVm: dayApresVm,
       });
     }
   }
 
-  //========================================================
-  // 4) "Go to Transparisation" – existing logic
-  //========================================================
-  goToTransparisation() {
+  /* =========================================================
+     4) go to transparisation page
+     ========================================================= */
+  goToTransparisation(): void {
     if (!this.selectedDate) {
       alert('Select a date first');
       return;
     }
     this.router.navigate(['/transparisation'], {
-      queryParams: {
-        date: this.selectedDate,
-        ptf: this.ptf || 'CIV'
-      }
+      queryParams: { date: this.selectedDate, ptf: this.ptf || 'CIV' },
     });
   }
 
-  //========================================================
-  // 5) "Transparise" – Add new rows for each _PB, _PR, _ACT
-  //========================================================
-  transpariseData() {
+  /* =========================================================
+     5) transpariseData (adds _PB/_PR/_ACT rows)
+     ========================================================= */
+  transpariseData(): void {
     if (!this.dateImage || !this.dateImageFin || !this.ptf) {
       alert('Please fill in all fields.');
       return;
     }
-
-    const sortedDates = Object.keys(this.rawData).sort();
-
-    for (const date of sortedDates) {
-      const url = `http://localhost:8080/api/transparisation/calculated/aggregate-by-categorie?date=${date}&ptf=${this.ptf}`;
-
-      this.http.get<any[]>(url).subscribe(data => {
-        const transformed = this.transformData(data);
-
-        // Build OldDataItem entries for each new row
-        const newItems: OldDataItem[] = transformed.map(item => {
-          let classe = 2;
-          if (item.categorie.endsWith('_PB')) classe = 1;
-          if (item.categorie.endsWith('_ACT')) classe = 3;
-
-          return {
-            categorieTitre: item.categorie,
-            numClasse: classe,
-            totalValoSum: item.vm,
-            pdrTotalNetSum: item.vc,
-            isTransparise: true  // mark them
-          };
-        });
-
-        // Merge them into rawData for this date
-        this.rawData[date] = [
-          ...this.rawData[date],
-          ...newItems
-        ];
-
-        // Now regenerate the table with aggregator logic
+    const dates = Object.keys(this.rawData);
+    dates.forEach((d) => {
+      const url = `http://localhost:8080/api/transparisation/calculated/aggregate-by-categorie?date=${d}&ptf=${this.ptf}`;
+      this.http.get<any[]>(url).subscribe((data) => {
+        const rows = this.transformData(data).map((i) => ({
+          categorieTitre: i.categorie,
+          numClasse: i.categorie.endsWith('_ACT')
+            ? 3
+            : i.categorie.endsWith('_PB')
+              ? 1
+              : 2,
+          totalValoSum: i.vm,
+          pdrTotalNetSum: i.vc,
+          isTransparise: true,
+        }));
+        this.rawData[d] = [...(this.rawData[d] || []), ...rows];
         this.updateDisplayedData();
       });
-    }
+    });
   }
 
-  private transformData(data: any[]): any[] {
-    // Logique déjà existante pour suffixer _PB, _PR, _ACT
-    const results: any[] = [];
-    data.forEach(item => {
-      // DETTE PUB
-      if (item.dettePubVc !== 0 || item.dettePubVm !== 0) {
-        results.push({
-          categorie: `${item.categorie}_PB`,
-          vc: item.dettePubVc,
-          vm: item.dettePubVm
-        });
-      }
-      // DETTE PRIV
-      if (item.dettePrivVc !== 0 || item.dettePrivVm !== 0) {
-        results.push({
-          categorie: `${item.categorie}_PR`,
-          vc: item.dettePrivVc,
-          vm: item.dettePrivVm
-        });
-      }
-      // ACTIONS
-      if (item.actionsVc !== 0 || item.actionsVm !== 0) {
-        results.push({
-          categorie: `${item.categorie}_ACT`,
-          vc: item.actionsVc,
-          vm: item.actionsVm
-        });
-      }
+  /* helper */
+  private transformData(arr: any[]): any[] {
+    const out: any[] = [];
+    arr.forEach((i) => {
+      if (i.dettePubVc || i.dettePubVm)
+        out.push({ categorie: `${i.categorie}_PB`, vc: i.dettePubVc, vm: i.dettePubVm });
+      if (i.dettePrivVc || i.dettePrivVm)
+        out.push({ categorie: `${i.categorie}_PR`, vc: i.dettePrivVc, vm: i.dettePrivVm });
+      if (i.actionsVc || i.actionsVm)
+        out.push({ categorie: `${i.categorie}_ACT`, vc: i.actionsVc, vm: i.actionsVm });
     });
-    return results;
+    return out;
   }
+
+
+  /* convenience getters for template */
+  get itemRows(): DisplayRow[] {
+    return this.displayedData.filter(r => r.isItem);
+  }
+  get summaryRows(): DisplayRow[] {
+    return this.displayedData.filter(r => !r.isItem);
+  }
+
 }

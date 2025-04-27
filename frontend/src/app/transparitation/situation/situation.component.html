@@ -1,42 +1,79 @@
 <div class="p-6 bg-white shadow-xl rounded-xl max-w-7xl mx-auto mt-6">
-
   <!-- Inputs -->
   <div class="flex flex-col md:flex-row gap-4 mb-6">
-    <input [(ngModel)]="ptf" type="text" placeholder="PTF"
-           class="p-3 border border-gray-300 rounded-md w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    <input [(ngModel)]="ptf" placeholder="PTF"
+           class="p-3 border rounded-md w-full md:w-1/3" />
 
     <input [(ngModel)]="dateImage" type="date"
-           class="p-3 border border-gray-300 rounded-md w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+           class="p-3 border rounded-md w-full md:w-1/3" />
 
     <input [(ngModel)]="dateImageFin" type="date"
-           class="p-3 border border-gray-300 rounded-md w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+           class="p-3 border rounded-md w-full md:w-1/3" />
   </div>
 
   <!-- Buttons -->
   <div class="flex flex-col md:flex-row gap-4 mb-6">
-    <!-- Link to transparisation -->
     <a [href]="'/transparisation?date=' + selectedDate + '&ptf=' + ptf"
        target="_blank"
-       class="px-6 py-3 bg-blue-600 text-white text-center rounded-md hover:bg-blue-700 transition-all duration-200 shadow">
+       class="px-6 py-3 bg-blue-600 text-white rounded-md">
       Go to Transparisation
     </a>
 
-    <!-- Avant Traitement -->
     <button (click)="fetchData()"
-            class="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition-all duration-200 shadow">
+            class="px-6 py-3 bg-green-600 text-white rounded-md">
       Calculer Avant Traitement
     </button>
 
-    <!-- Transparise -->
     <button (click)="transpariseData()"
-            class="px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-all duration-200 shadow">
+            class="px-6 py-3 bg-purple-600 text-white rounded-md">
       Transparise
     </button>
   </div>
+  <!-- ────────────────────────────────────────────── -->
+  <!-- 1)  DETAIL ROWS (isItem = true)               -->
+  <!-- ────────────────────────────────────────────── -->
+  <div class="overflow-auto border rounded-lg mb-10">
+    <table class="min-w-full text-sm text-left border-collapse">
+      <!-- identical THEAD as before -->
+      <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-3 border">Date</th>
+        <th class="px-4 py-3 border">Classe</th>
+        <th class="px-4 py-3 border">Catégorie</th>
+        <th class="px-4 py-3 border text-center" colspan="2">Avant retraitement</th>
+        <th class="px-4 py-3 border text-center" colspan="2">Après retraitement</th>
+      </tr>
+      <tr class="bg-gray-100">
+        <th colspan="3"></th>
+        <th class="px-4 py-2 border">VC</th>
+        <th class="px-4 py-2 border">VM</th>
+        <th class="px-4 py-2 border">VC</th>
+        <th class="px-4 py-2 border">VM</th>
+      </tr>
+      </thead>
 
+      <tbody>
+      <tr *ngFor="let row of itemRows"
+          [ngClass]="{ 'bg-purple-50': row.isTransparise }">
 
-  <!-- Data Table -->
-  <div class="overflow-auto rounded-lg border border-gray-200">
+        <!-- same 7 <td> cells you already have -->
+        <td class="border px-4 py-2">{{ row.date }}</td>
+        <td class="border px-4 py-2">Classe {{ row.classe }}</td>
+        <td class="border px-4 py-2">{{ row.categorieTitre }}</td>
+
+        <td class="border px-4 py-2 text-right">{{ row.vc | number:'1.2-2' }}</td>
+        <td class="border px-4 py-2 text-right">{{ row.vm | number:'1.2-2' }}</td>
+        <td class="border px-4 py-2 text-right">{{ row.apresVc | number:'1.2-2' }}</td>
+        <td class="border px-4 py-2 text-right">{{ row.apresVm | number:'1.2-2' }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ────────────────────────────────────────────── -->
+  <!-- 2)  TOTAL / RATIO / TOTAL PORTFEUILLE TABLE   -->
+  <!-- ────────────────────────────────────────────── -->
+  <div class="overflow-auto border rounded-lg">
     <table class="min-w-full text-sm text-left border-collapse">
       <thead class="bg-gray-50">
       <tr>
@@ -54,57 +91,58 @@
         <th class="px-4 py-2 border">VM</th>
       </tr>
       </thead>
+
       <tbody>
-      <tr
-        *ngFor="let row of displayedData"
-        [ngClass]="{
-          'bg-orange-100 font-semibold': row.isClassTotal,
-          'bg-orange-50 italic': row.isClassRatio,
-          'bg-blue-100 font-bold': row.isGrandTotal,
-          'bg-purple-100': row.isTransparise
-        }"
-      >
+      <tr *ngFor="let row of summaryRows"
+          [ngClass]="{
+            'bg-orange-100 font-semibold': row.isClassTotal,
+            'bg-orange-50 italic': row.isClassRatio,
+            'bg-blue-100 font-bold': row.isGrandTotal
+          }">
+
+        <!-- Date -->
         <td class="border px-4 py-2">{{ row.date }}</td>
 
+        <!-- Classe or blank for Grand Total -->
         <td class="border px-4 py-2">
           <ng-container *ngIf="!row.isGrandTotal">Classe {{ row.classe }}</ng-container>
         </td>
 
+        <!-- Catégorie -->
         <td class="border px-4 py-2">{{ row.categorieTitre }}</td>
 
-        <!-- VC (avant) -->
+        <!-- Avant VC -->
         <td class="border px-4 py-2 text-right">
-          <ng-container *ngIf="row.isClassRatio; else normalVc">
-            <span class="text-red-500">{{ (row.ratioVc * 100) | number:'1.2-2' }}%</span>
+          <ng-container *ngIf="row.isClassRatio; else avVc">
+            <span class="text-red-600">{{ (row.ratioVc * 100) | number:'1.2-2' }}%</span>
           </ng-container>
-          <ng-template #normalVc>
-            {{ row.vc | number:'1.2-2' }}
-          </ng-template>
+          <ng-template #avVc>{{ row.vc | number:'1.2-2' }}</ng-template>
         </td>
 
-        <!-- VM (avant) -->
+        <!-- Avant VM -->
         <td class="border px-4 py-2 text-right">
-          <ng-container *ngIf="row.isClassRatio; else normalVm">
-            <span class="text-red-500">{{ (row.ratioVm * 100) | number:'1.2-2' }}%</span>
+          <ng-container *ngIf="row.isClassRatio; else avVm">
+            <span class="text-red-600">{{ (row.ratioVm * 100) | number:'1.2-2' }}%</span>
           </ng-container>
-          <ng-template #normalVm>
-            {{ row.vm | number:'1.2-2' }}
-          </ng-template>
+          <ng-template #avVm>{{ row.vm | number:'1.2-2' }}</ng-template>
         </td>
 
-        <!-- VC (après) -->
+        <!-- Après VC -->
         <td class="border px-4 py-2 text-right">
-          {{ row.apresVc || 0 | number:'1.2-2' }}
+          <ng-container *ngIf="row.isClassRatio; else apVc">
+            <span class="text-blue-600">{{ (row.ratioApresVc! * 100) | number:'1.2-2' }}%</span>
+          </ng-container>
+          <ng-template #apVc>{{ row.apresVc | number:'1.2-2' }}</ng-template>
         </td>
 
-        <!-- VM (après) -->
+        <!-- Après VM -->
         <td class="border px-4 py-2 text-right">
-          {{ row.apresVm || 0 | number:'1.2-2' }}
+          <ng-container *ngIf="row.isClassRatio; else apVm">
+            <span class="text-blue-600">{{ (row.ratioApresVm! * 100) | number:'1.2-2' }}%</span>
+          </ng-container>
+          <ng-template #apVm>{{ row.apresVm | number:'1.2-2' }}</ng-template>
         </td>
-
       </tr>
       </tbody>
     </table>
   </div>
-
-</div>

@@ -42,4 +42,6 @@ public class Transparisation {
 
     @Column(name = "action")
     private Double action;
+
+
 }

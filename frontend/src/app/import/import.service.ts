@@ -1,66 +1,34 @@
-// import.service.ts
-import { Observable } from "rxjs";
-import { HttpClient, HttpEvent } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpEvent } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ImportService {
 
-  private fichePortefeuilleUploadUrl = 'http://localhost:8080/api/fiche-portefeuille/upload';
-  private categorieUploadUrl = 'http://localhost:8080/api/categories/import-excel';
-  private referentielTitreUploadUrl = 'http://localhost:8080/api/referentiel-titres/upload';
-  // Existing endpoint for Transparisation upload
-  private transparisationUploadUrl = 'http://localhost:8080/api/transparisation/upload';
-  // New endpoint for Op upload
-  private opUploadUrl = 'http://localhost:8080/api/op/upload';
+  private readonly baseUrl = 'http://localhost:8080/api/import';
 
   constructor(private http: HttpClient) {}
 
-  uploadFichePortefeuille(file: File): Observable<HttpEvent<any>> {
+  /** Generic uploader used by all public helpers */
+  private upload(file: File, endpoint: string): Observable<HttpEvent<any>> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post<any>(this.fichePortefeuilleUploadUrl, formData, {
+
+    return this.http.post(`${this.baseUrl}/${endpoint}`, formData, {
       reportProgress: true,
       observe: 'events'
     });
   }
 
-  uploadCategorieExcel(file: File): Observable<HttpEvent<any>> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post<any>(this.categorieUploadUrl, formData, {
-      reportProgress: true,
-      observe: 'events'
-    });
-  }
+  // ---------- public helpers ----------
+  /** Workbook that contains both “fp” & “op” sheets */
+  uploadFichePortefeuille(file: File)     { return this.upload(file, 'fiche-op'); }
+  uploadCategorieExcel(file: File)        { return this.upload(file, 'categorie'); }
+  uploadReferentielTitreExcel(file: File) { return this.upload(file, 'referentiel'); }
+  uploadTransparisationExcel(file: File)  { return this.upload(file, 'transparisation'); }
 
-  uploadReferentielTitreExcel(file: File): Observable<HttpEvent<any>> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post<any>(this.referentielTitreUploadUrl, formData, {
-      reportProgress: true,
-      observe: 'events'
-    });
-  }
-
-  uploadTransparisationExcel(file: File): Observable<HttpEvent<any>> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post<any>(this.transparisationUploadUrl, formData, {
-      reportProgress: true,
-      observe: 'events'
-    });
-  }
-
-  // New method for Op upload
-  uploadOpExcel(file: File): Observable<HttpEvent<any>> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post<any>(this.opUploadUrl, formData, {
-      reportProgress: true,
-      observe: 'events'
-    });
-  }
+  /** Optional stand-alone OP workbook – points to same endpoint */
+  uploadOpExcel(file: File)               { return this.upload(file, 'fiche-op'); }
 }

@@ -50,6 +50,75 @@ public class ImportExcelService {
         }
     }
 
+    public void importReferentielTitreExcel(MultipartFile file) throws Exception {
+        try (InputStream is = file.getInputStream()) {
+            Workbook wb = WorkbookFactory.create(is);
+            parseReferentielTitre(wb.getSheetAt(0));
+        }
+    }
+
+    // -----------------------------------------------------------------------------
+// 1.  ADD two overloads that accept MultipartFile
+// -----------------------------------------------------------------------------
+    public void importTransparisation(MultipartFile file) throws Exception {
+        try (InputStream is = file.getInputStream()) {
+            Workbook workbook = WorkbookFactory.create(is);
+            parseTransparisation(workbook.getSheetAt(0));   // reuse the parser
+        }
+    }
+
+    public void importCategorie(MultipartFile file) throws Exception {
+        try (InputStream is = file.getInputStream()) {
+            Workbook workbook = WorkbookFactory.create(is);
+            parseCategorie(workbook.getSheetAt(0));         // reuse the parser
+        }
+    }
+
+    // -----------------------------------------------------------------------------
+// 2.  EXTRACT the parsing loops into private helpers to eliminate duplication
+// -----------------------------------------------------------------------------
+    private void parseTransparisation(Sheet sheet) {
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            if (row == null) continue;
+
+            Transparisation t = Transparisation.builder()
+                    .dateImage(getCellLocalDateValue(row, 0))
+                    .dateImageFin(getCellLocalDateValue(row, 1))
+                    .titre(getCellStringValue(row, 2))
+                    .codeIsin(getCellStringValue(row, 3))
+                    .description(getCellStringValue(row, 4))
+                    .categorie(getCellStringValue(row, 5))
+                    .dettePublic(getCellDoubleValue(row, 6))
+                    .dettePrivee(getCellDoubleValue(row, 7))
+                    .action(getCellDoubleValue(row, 8))
+                    .build();
+
+            transparisationRepository.save(t);
+        }
+    }
+
+    private void parseCategorie(Sheet sheet) {
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            if (row == null) continue;
+
+            Categorie cat = Categorie.builder()
+                    .categorie(getCellStringValue(row, 0))
+                    .classe(getCellStringValue(row, 1))
+                    .classeReglementaire(getCellStringValue(row, 2))
+                    .num_classe(getCellIntegerValue(row, 3))
+                    .build();
+
+            categorieRepository.save(cat);
+        }
+    }
+
+    // -----------------------------------------------------------------------------
+// 3.  Re-wire the existing String-path versions to call those helpers
+// -----------------------------------------------------------------------------
+
+
     private void readWorkbook(InputStream inputStream) throws Exception {
         Workbook workbook = WorkbookFactory.create(inputStream);
 

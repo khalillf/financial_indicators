@@ -1,0 +1,35 @@
+.container {
+  max-width: 1800px;
+}
+
+table {
+  min-width: 100%;
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+}
+
+tr:hover {
+  background-color: #374151;
+}
+
+/* Custom scrollbar for table */
+::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1F2937;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4B5563;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6B7280;
+}

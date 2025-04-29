@@ -10,9 +10,14 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TransparisationRepository extends JpaRepository<Transparisation, Integer> {
+   ;
+    Optional<Transparisation> findByTitre(String titre);
+    Optional<Transparisation> findByDescription(String description);
+
     @Query("""
     SELECT new com.gov.cmr.backend.transparisation.dto.TransparisationResultDto(
         t.dateImage,

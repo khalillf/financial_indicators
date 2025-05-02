@@ -53,9 +53,10 @@ export class SituationComponent {
   private router = inject(Router);
 
   /* form inputs */
-  ptf = '';
-  dateImage = '';
-  dateImageFin = '';
+  ptf = 'civ';
+  dateImage = '2025-03-31';
+  dateImageFin = '2025-03-31';
+
 
   /* data */
   rawData: Record<string, OldDataItem[]> = {};
@@ -323,7 +324,81 @@ export class SituationComponent {
     });
     return out;
   }
+  /* -----------------------------------------------------------
+     6) saveTransparisedData – POST each transparised row
+     ----------------------------------------------------------- */
+  /* -----------------------------------------------------------
+     6) saveTransparisedData – POST the whole batch once
+     ----------------------------------------------------------- */
+  saveTransparisedData(): void {
 
+    /* gather only transparised rows */
+    const payload = this.itemRows
+      .filter(r => r.isTransparise)
+      .map(r => ({
+        date      : r.date,                    // yyyy-MM-dd
+        classe    : 'Classe ' + r.classe,      // same label you show
+        categorie : r.categorieTitre,
+        vcAvant   : r.vc,
+        vmAvant   : r.vm,
+        vcApres   : r.apresVc,
+        vmApres   : r.apresVm
+      }));
+
+    if (!payload.length) {
+      alert('Nothing to save – click “Transparise” first.');
+      return;
+    }
+
+    this.http.post(
+      'http://localhost:8080/api/transparisation/postdata/batch', // ✅ corrected
+      payload,
+      { headers: { 'Content-Type': 'application/json' } }
+    ).subscribe({
+      next : ()  => alert('All transparised data saved!'),
+      error: err => alert('Save failed: ' + err.message)
+    });
+  }
+
+  /* -----------------------------------------------------------
+     6) saveAllTableData – POST *every* row we rendered
+     ----------------------------------------------------------- */
+  saveAllTableData(): void {
+
+    /* 1️⃣  merge both data sets that feed the template */
+    const allRows: DisplayRow[] = [...this.itemRows, ...this.summaryRows];
+
+    /* 2️⃣  turn every row into the DTO the back-end expects   */
+    /*      – “Ratio” rows: we still send the numeric ratios   */
+    /*        in the same 4 value fields (they’re just % now). */
+    const payload = allRows.map(r => ({
+      date      : r.date,                          // yyyy-MM-dd
+      classe    : r.classe !== null
+        ? `Classe ${r.classe}`           // “Classe 1”, “Classe 2”…
+        : '',                            // blank for Grand Total
+      categorie : r.categorieTitre,                // “BDT”, “Total”, “Ratio”…
+      vc_avant  : r.vc,
+      vm_avant  : r.vm,
+      vc_apres  : r.apresVc,
+      vm_apres  : r.apresVm
+    }));
+
+    /* 3️⃣  quick guard */
+    if (!payload.length) {
+      alert('Nothing to save – load data first.');
+      return;
+    }
+
+    /* 4️⃣  one batched POST – matches the /postdata/batch endpoint */
+    this.http.post(
+      'http://localhost:8080/api/transparisation/postdata/batch',
+      payload,
+      { headers: { 'Content-Type': 'application/json' } }
+    ).subscribe({
+      next : ()   => alert('✅  All table rows stored in the database!'),
+      error: err  => alert('❌  Saving failed: ' + err.message)
+    });
+  }
 
   /* convenience getters for template */
   get itemRows(): DisplayRow[] {

@@ -49,21 +49,21 @@ export class SidebarComponent {
         {
           label: 'Fiche Portefeuille',
           icon: 'fa-solid fa-file-upload',
-          route: '/consultfp'
+          route: '/consult/fp'
         }, {
           label: 'Transparisation',
           icon: 'fa-solid fa-file-upload',
-          route: '/trans'
+          route: '/consult/trans'
         },
         {
           label: 'Categorie',
           icon: 'fa-solid fa-file-upload',
-          route: '/trans'
+          route: '/consult/categorie'
         },
         {
           label: 'Referentiel Titre',
           icon: 'fa-solid fa-file-upload',
-          route: '/trans'
+          route: '/consult/rf'
         }
       ]
     },

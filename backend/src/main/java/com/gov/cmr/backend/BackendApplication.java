@@ -23,6 +23,9 @@ public class BackendApplication implements CommandLineRunner {
             importExcelService.importReferentielTitreExcel("X:/CMR_insert/referentiel_titre.xlsx");
             importExcelService.importTransparisation("X:/CMR_insert/trans.xlsx");
             importExcelService.importCategorie("X:/CMR_insert/Categorie.xlsx");
+            importExcelService.importClasseReglementaireValeur("X:/CMR_insert/Classe.xlsx");
+            importExcelService.importAllocationStrategique("X:/CMR_insert/alloc_strat.xlsx");
+
             System.out.println("All imports completed successfully.");
         } catch (Exception e) {
             System.err.println("❌ Failed to import Excel data: " + e.getMessage());

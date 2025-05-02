@@ -26,6 +26,9 @@ public class ImportExcelService {
     private final ReferentielTitreRepository referentielTitreRepository;
     private final TransparisationRepository transparisationRepository;
     private final CategorieRepository categorieRepository;
+    private final ClasseReglementaireValeurRepository classeReglementaireValeurRepository;
+    private final AllocationStrategiqueRepository   allocationStrategiqueRepository;
+
 
     // ------------------ MAIN METHODS ------------------
 
@@ -54,6 +57,111 @@ public class ImportExcelService {
         try (InputStream is = file.getInputStream()) {
             Workbook wb = WorkbookFactory.create(is);
             parseReferentielTitre(wb.getSheetAt(0));
+        }
+    }
+
+
+
+
+
+
+
+
+    /* --------------------------------------------------------------------
+       PARSER – sheet “Classe”  (4 colonnes)
+    --------------------------------------------------------------------- */
+    private void parseClasseReglementaireValeur(Sheet sheet) {
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            if (row == null) continue;
+
+            try {
+                String code = getCellStringValue(row, 2);
+                if (code == null || code.isBlank()) {
+                    System.err.println("⚠️ Ligne " + i + ": classeRegl vide, ignorée.");
+                    continue;
+                }
+
+                ClasseReglementaireValeur crv = ClasseReglementaireValeur.builder()
+                        .dateDebut(getCellLocalDateValue(row, 0))
+                        .dateFin(getCellLocalDateValue(row, 1))
+                        .classeRegl(code)
+                        .valeur(getCellBigDecimalValue(row, 3))
+                        .build();
+
+                classeReglementaireValeurRepository.save(crv);
+
+            } catch (Exception ex) {
+                System.err.println("❌ Erreur ligne " + i + " [Classe]: " + ex.getMessage());
+            }
+        }
+    }
+
+    public void importClasseReglementaireValeur(String filePath) throws Exception {
+        try (InputStream is = new FileInputStream(filePath)) {
+            Workbook wb = WorkbookFactory.create(is);
+            Sheet sheet = wb.getSheetAt(0);
+            System.out.println("📄 Sheet Classe: " + sheet.getSheetName());
+            parseClasseReglementaireValeur(sheet);
+        }
+    }
+
+    public void importClasseReglementaireValeur(MultipartFile file) throws Exception {
+        try (InputStream is = file.getInputStream()) {
+            Workbook wb = WorkbookFactory.create(is);
+            Sheet sheet = wb.getSheetAt(0);
+            System.out.println("📄 Sheet Classe: " + sheet.getSheetName());
+            parseClasseReglementaireValeur(sheet);
+        }
+    }
+
+
+
+    /* --------------------------------------------------------------------
+   PARSER – sheet “AllocationStrategique” (10 colonnes)
+--------------------------------------------------------------------- */
+    private void parseAllocationStrategique(Sheet sheet) {
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            if (row == null) continue;
+
+            try {
+                AllocationStrategique as = AllocationStrategique.builder()
+                        .dateDebut(getCellLocalDateValue(row, 0))
+                        .dateFin(getCellLocalDateValue(row, 1))
+                        .regime(getCellStringValue(row, 2))
+                        .regimeDescription(getCellStringValue(row, 3))
+                        .classeCode(getCellStringValue(row, 4))
+                        .classeDescription(getCellStringValue(row, 5))
+                        .allocationCible(getCellBigDecimalValue(row, 6))
+                        .allocationMin(getCellBigDecimalValue(row, 7))
+                        .allocationMax(getCellBigDecimalValue(row, 8))
+                        .classeStrategique(getCellStringValue(row, 9))
+                        .build();
+
+                allocationStrategiqueRepository.save(as);
+
+            } catch (Exception ex) {
+                System.err.println("❌ Erreur ligne " + i + " [Allocation]: " + ex.getMessage());
+            }
+        }
+    }
+
+    public void importAllocationStrategique(String filePath) throws Exception {
+        try (InputStream is = new FileInputStream(filePath)) {
+            Workbook wb = WorkbookFactory.create(is);
+            Sheet sheet = wb.getSheetAt(0);
+            System.out.println("📄 Sheet Allocation: " + sheet.getSheetName());
+            parseAllocationStrategique(sheet);
+        }
+    }
+
+    public void importAllocationStrategique(MultipartFile file) throws Exception {
+        try (InputStream is = file.getInputStream()) {
+            Workbook wb = WorkbookFactory.create(is);
+            Sheet sheet = wb.getSheetAt(0);
+            System.out.println("📄 Sheet Allocation: " + sheet.getSheetName());
+            parseAllocationStrategique(sheet);
         }
     }
 

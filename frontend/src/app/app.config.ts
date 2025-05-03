@@ -8,6 +8,7 @@ import {FichePortefeuilleComponent} from "./consultation/fiche-portefeuille/fich
 import {TransSearchComponent} from "./consultation/trans-search/trans-search.component";
 import {RfComponent} from "./consultation/rf/rf.component";
 import {CategorieComponent} from "./consultation/categorie/categorie.component";
+import {GraphRatioComponent} from "./transparitation/graph-ratio/graph-ratio.component";
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -21,6 +22,7 @@ export const appConfig: ApplicationConfig = {
       { path: 'consult/trans', component: TransSearchComponent },
       { path: 'consult/categorie', component: CategorieComponent },
       { path: 'consult/rf', component: RfComponent },
+      { path: 'graph', component: GraphRatioComponent },
 
     ])
   ]

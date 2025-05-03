@@ -34,8 +34,8 @@ interface DisplayRow {
   /* Après */
   apresVc: number;
   apresVm: number;
-  ratioApresVc?: number;  // NEW
-  ratioApresVm?: number;  // NEW
+  ratioApresVc?: number;
+  ratioApresVm?: number;
 
   isTransparise?: boolean;
 }
@@ -55,8 +55,7 @@ export class SituationComponent {
   /* form inputs */
   ptf = 'civ';
   dateImage = '2025-03-31';
-  dateImageFin = '2025-03-31';
-
+  dateImageFin = '2025-05-31';
 
   /* data */
   rawData: Record<string, OldDataItem[]> = {};
@@ -66,8 +65,8 @@ export class SituationComponent {
   displayedData: DisplayRow[] = [];
 
   /* =========================================================
-     1) fetch original (“avant”) aggregates
-     ========================================================= */
+   1) fetch original (“avant”) aggregates
+  ========================================================= */
   fetchData(): void {
     if (!this.ptf || !this.dateImage || !this.dateImageFin) {
       alert('Please fill in all fields.');
@@ -76,26 +75,27 @@ export class SituationComponent {
     const url = `http://localhost:8080/api/fiche-portefeuille/aggregate?start=${this.dateImage}&end=${this.dateImageFin}&ptf=${this.ptf}`;
     this.http.get<Record<string, OldDataItem[]>>(url).subscribe((data) => {
       this.rawData = data;
-      this.availableDates = Object.keys(data);
+      /* keep only the dates that really have numbers */
+      this.availableDates = Object.keys(data).filter((d) =>
+        (data[d] ?? []).some(i => i.totalValoSum || i.pdrTotalNetSum)
+      ).sort();
       this.selectedDate = this.availableDates[0] ?? null;
       this.updateDisplayedData();
     });
   }
 
   /* =========================================================
-     2) pick a date
-     ========================================================= */
+   2) pick a date
+  ========================================================= */
   selectDate(d: string): void {
     this.selectedDate = d;
     this.updateDisplayedData();
   }
 
   /* =========================================================
-     3) build rows with correct Avant & Après ratios
-     ========================================================= */
-  /* =========================================================
-     3) Build rows with correct Avant & Après ratios
-     ========================================================= */
+   3) build rows with correct Avant & Après ratios
+      – now skips any date whose grand‑total is all‑zero
+  ========================================================= */
   updateDisplayedData(): void {
     this.displayedData = [];
 
@@ -106,7 +106,7 @@ export class SituationComponent {
 
       /* ---------- PASS #1 – prepare helpers & day totals ---------- */
 
-      /* 1-a  gather transparised buckets */
+      /* 1‑a  gather transparised buckets */
       const buckets = new Map<string, { vc: number; vm: number }>();
       arr.forEach((it) => {
         if (it.isTransparise) {
@@ -118,14 +118,14 @@ export class SituationComponent {
         }
       });
 
-      /* 1-b  compute day-level Avant & Après totals */
+      /* 1‑b  compute day‑level Avant & Après totals */
       let dayAvantVc = 0,
         dayAvantVm = 0,
         dayApresVc = 0,
         dayApresVm = 0;
 
       arr.forEach((it) => {
-        /* Avant adds only non-transparised rows */
+        /* Avant adds only non‑transparised rows */
         if (!it.isTransparise) {
           dayAvantVc += it.pdrTotalNetSum;
           dayAvantVm += it.totalValoSum;
@@ -141,6 +141,14 @@ export class SituationComponent {
           dayApresVm += it.totalValoSum - (bucket?.vm ?? 0);
         }
       });
+
+      /*  NEW ➜  skip if both Avant & Après are 0  */
+      if (
+        dayAvantVc === 0 && dayAvantVm === 0 &&
+        dayApresVc === 0 && dayApresVm === 0
+      ) {
+        continue; // nothing to show for this date
+      }
 
       /* ---------- PASS #2 – emit item rows, class totals & ratios ---------- */
 
@@ -270,21 +278,21 @@ export class SituationComponent {
   }
 
   /* =========================================================
-     4) go to transparisation page
-     ========================================================= */
+   4) go to transparisation page
+  ========================================================= */
   goToTransparisation(): void {
     if (!this.selectedDate) {
       alert('Select a date first');
       return;
     }
-    this.router.navigate(['/transparisation'], {
+    this.router.navigate([' /transparisation'], {
       queryParams: { date: this.selectedDate, ptf: this.ptf || 'CIV' },
     });
   }
 
   /* =========================================================
-     5) transpariseData (adds _PB/_PR/_ACT rows)
-     ========================================================= */
+   5) transpariseData (adds _PB/_PR/_ACT rows)
+  ========================================================= */
   transpariseData(): void {
     if (!this.dateImage || !this.dateImageFin || !this.ptf) {
       alert('Please fill in all fields.');
@@ -324,25 +332,21 @@ export class SituationComponent {
     });
     return out;
   }
-  /* -----------------------------------------------------------
-     6) saveTransparisedData – POST each transparised row
-     ----------------------------------------------------------- */
-  /* -----------------------------------------------------------
-     6) saveTransparisedData – POST the whole batch once
-     ----------------------------------------------------------- */
-  saveTransparisedData(): void {
 
-    /* gather only transparised rows */
+  /* -----------------------------------------------------------
+   6) saveTransparisedData – POST each transparised row
+  ----------------------------------------------------------- */
+  saveTransparisedData(): void {
     const payload = this.itemRows
-      .filter(r => r.isTransparise)
-      .map(r => ({
-        date      : r.date,                    // yyyy-MM-dd
-        classe    : 'Classe ' + r.classe,      // same label you show
-        categorie : r.categorieTitre,
-        vcAvant   : r.vc,
-        vmAvant   : r.vm,
-        vcApres   : r.apresVc,
-        vmApres   : r.apresVm
+      .filter((r) => r.isTransparise)
+      .map((r) => ({
+        date: r.date, // yyyy‑MM‑dd
+        classe: 'Classe ' + r.classe,
+        categorie: r.categorieTitre,
+        vcAvant: r.vc,
+        vmAvant: r.vm,
+        vcApres: r.apresVc,
+        vmApres: r.apresVm,
       }));
 
     if (!payload.length) {
@@ -350,62 +354,69 @@ export class SituationComponent {
       return;
     }
 
-    this.http.post(
-      'http://localhost:8080/api/transparisation/postdata/batch', // ✅ corrected
-      payload,
-      { headers: { 'Content-Type': 'application/json' } }
-    ).subscribe({
-      next : ()  => alert('All transparised data saved!'),
-      error: err => alert('Save failed: ' + err.message)
-    });
+    this.http
+      .post('http://localhost:8080/api/transparisation/postdata/batch', payload, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+      .subscribe({
+        next: () => alert('All transparised data saved!'),
+        error: (err) => alert('Save failed: ' + err.message),
+      });
   }
 
   /* -----------------------------------------------------------
-     6) saveAllTableData – POST *every* row we rendered
-     ----------------------------------------------------------- */
+   6) saveAllTableData – POST *every* row we rendered
+  ----------------------------------------------------------- */
   saveAllTableData(): void {
-
-    /* 1️⃣  merge both data sets that feed the template */
     const allRows: DisplayRow[] = [...this.itemRows, ...this.summaryRows];
 
-    /* 2️⃣  turn every row into the DTO the back-end expects   */
-    /*      – “Ratio” rows: we still send the numeric ratios   */
-    /*        in the same 4 value fields (they’re just % now). */
-    const payload = allRows.map(r => ({
-      date      : r.date,                          // yyyy-MM-dd
-      classe    : r.classe !== null
-        ? `Classe ${r.classe}`           // “Classe 1”, “Classe 2”…
-        : '',                            // blank for Grand Total
-      categorie : r.categorieTitre,                // “BDT”, “Total”, “Ratio”…
-      vc_avant  : r.vc,
-      vm_avant  : r.vm,
-      vc_apres  : r.apresVc,
-      vm_apres  : r.apresVm
+    const payload = allRows.map((r) => ({
+      date: r.date,
+      classe: r.classe !== null ? `Classe ${r.classe}` : '',
+      categorie: r.categorieTitre,
+      vc_avant: r.vc,
+      vm_avant: r.vm,
+      vc_apres: r.apresVc,
+      vm_apres: r.apresVm,
     }));
 
-    /* 3️⃣  quick guard */
     if (!payload.length) {
       alert('Nothing to save – load data first.');
       return;
     }
 
-    /* 4️⃣  one batched POST – matches the /postdata/batch endpoint */
-    this.http.post(
-      'http://localhost:8080/api/transparisation/postdata/batch',
-      payload,
-      { headers: { 'Content-Type': 'application/json' } }
-    ).subscribe({
-      next : ()   => alert('✅  All table rows stored in the database!'),
-      error: err  => alert('❌  Saving failed: ' + err.message)
-    });
+    this.http
+      .post('http://localhost:8080/api/transparisation/postdata/batch', payload, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+      .subscribe({
+        next: () => alert('✅  All table rows stored in the database!'),
+        error: (err) => alert('❌  Saving failed: ' + err.message),
+      });
   }
 
   /* convenience getters for template */
   get itemRows(): DisplayRow[] {
-    return this.displayedData.filter(r => r.isItem);
+    return this.displayedData.filter((r) => r.isItem);
   }
   get summaryRows(): DisplayRow[] {
-    return this.displayedData.filter(r => !r.isItem);
+    return this.displayedData.filter((r) => !r.isItem);
   }
 
+  /* =============================================
+     ➜  add / replace the navigation method
+  ============================================= */
+  goToGraphRatio(): void {
+    if (!this.dateImage || !this.dateImageFin) {
+      alert('Please fill the start & end dates first.');
+      return;
+    }
+
+    const ratios = this.summaryRows.filter((r) => r.isClassRatio || r.isGrandTotal);
+
+    this.router.navigate(['/graph'], {
+      queryParams: { ptf: this.ptf || 'civ' },
+      state: { ratios },
+    });
+  }
 }

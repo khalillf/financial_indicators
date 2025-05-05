@@ -5,64 +5,48 @@
   <div class="flex flex-col md:flex-row md:flex-wrap gap-4 items-center bg-gray-800 p-6 rounded-lg shadow-lg">
 
     <!-- Colour pickers -->
-    <label
-      class="flex items-center gap-3 bg-gray-700 px-4 py-2 rounded-md shadow-sm border border-gray-600"
-    >
+    <label class="flex items-center gap-3 bg-gray-700 px-4 py-2 rounded-md shadow-sm border border-gray-600">
       <span class="text-sm text-gray-200">VC color</span>
-      <input
-        type="color"
-        [(ngModel)]="vcColor"
-        (change)="updateGraphs()"
-        class="w-8 h-8 border border-gray-600 rounded cursor-pointer"
-      />
+      <input type="color"
+             [(ngModel)]="vcColor"
+             (change)="updateGraphs()"
+             class="w-8 h-8 border border-gray-600 rounded cursor-pointer">
     </label>
 
-    <label
-      class="flex items-center gap-3 bg-gray-700 px-4 py-2 rounded-md shadow-sm border border-gray-600"
-    >
+    <label class="flex items-center gap-3 bg-gray-700 px-4 py-2 rounded-md shadow-sm border border-gray-600">
       <span class="text-sm text-gray-200">VM color</span>
-      <input
-        type="color"
-        [(ngModel)]="vmColor"
-        (change)="updateGraphs()"
-        class="w-8 h-8 border border-gray-600 rounded cursor-pointer"
-      />
+      <input type="color"
+             [(ngModel)]="vmColor"
+             (change)="updateGraphs()"
+             class="w-8 h-8 border border-gray-600 rounded cursor-pointer">
     </label>
 
-    <label
-      class="flex items-center gap-3 bg-gray-700 px-4 py-2 rounded-md shadow-sm border border-gray-600"
-    >
+    <label class="flex items-center gap-3 bg-gray-700 px-4 py-2 rounded-md shadow-sm border border-gray-600">
       <span class="text-sm text-gray-200">Target color</span>
-      <input
-        type="color"
-        [(ngModel)]="targetColor"
-        (change)="updateGraphs()"
-        class="w-8 h-8 border border-gray-600 rounded cursor-pointer"
-      />
+      <input type="color"
+             [(ngModel)]="targetColor"
+             (change)="updateGraphs()"
+             class="w-8 h-8 border border-gray-600 rounded cursor-pointer">
     </label>
 
     <!-- Date range -->
     <div class="flex flex-col sm:flex-row gap-3">
       <div class="flex items-center gap-2 bg-gray-700 px-4 py-2 rounded-md border border-gray-600">
         <span class="text-sm text-gray-200">From</span>
-        <input
-          type="date"
-          [(ngModel)]="startDate"
-          (change)="updateGraphs()"
-          class="p-1 bg-gray-800 border border-gray-600 rounded-md text-sm
-                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-100"
-        />
+        <input type="date"
+               [(ngModel)]="startDate"
+               (change)="updateGraphs()"
+               class="p-1 bg-gray-800 border border-gray-600 rounded-md text-sm
+                      focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-100">
       </div>
 
       <div class="flex items-center gap-2 bg-gray-700 px-4 py-2 rounded-md border border-gray-600">
         <span class="text-sm text-gray-200">To</span>
-        <input
-          type="date"
-          [(ngModel)]="endDate"
-          (change)="updateGraphs()"
-          class="p-1 bg-gray-800 border border-gray-600 rounded-md text-sm
-                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-100"
-        />
+        <input type="date"
+               [(ngModel)]="endDate"
+               (change)="updateGraphs()"
+               class="p-1 bg-gray-800 border border-gray-600 rounded-md text-sm
+                      focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-100">
       </div>
     </div>
   </div>
@@ -73,36 +57,34 @@
       Évolution des ratios (Après)
     </h2>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div
-        *ngFor="let g of graphs; let i = index"
-        class="bg-gray-700 p-5 rounded-xl border border-gray-600 shadow-md hover:shadow-lg transition"
-      >
-        <h3 class="text-center text-lg font-semibold mb-4 border-b border-gray-600 pb-2">
+    <!-- One chart per row, bigger -->
+    <div class="space-y-12">
+      <div *ngFor="let g of graphs; let i = index"
+           class="bg-gray-700 p-6 rounded-xl border border-gray-600 shadow-md hover:shadow-lg transition">
+        <h3 class="text-lg font-semibold mb-4 border-b border-gray-600 pb-2 text-center">
           {{ g.title }}
         </h3>
 
-        <!-- Chart -->
-        <div class="relative h-80">
-          <canvas
-            #c
-            baseChart
-            [data]="g.data"
-            [options]="chartOptions"
-            [type]="'line'"
-            class="w-full h-full"
-          ></canvas>
+        <!-- 24‑rem tall canvas -->
+        <div class="relative h-96">
+          <canvas baseChart
+                  #c
+                  [datasets]="g.data.datasets"
+                  [labels]="g.data.labels"
+                  [options]="chartOptions"
+                  [plugins]="chartPlugins"
+                  [type]="'line'"
+                  class="w-full h-full">
+          </canvas>
         </div>
 
         <!-- Download -->
         <div class="flex justify-center mt-4">
-          <button
-            (click)="downloadChart(i)"
-            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-md
-                   flex items-center gap-2 transition"
-          >
+          <button (click)="downloadChart(i)"
+                  class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-md
+                         flex items-center gap-2 transition">
             <i class="fa-solid fa-download"></i>
-            Download PNG
+            Download 
           </button>
         </div>
       </div>
@@ -111,11 +93,9 @@
 
   <!-- Back link -->
   <div>
-    <a
-      routerLink="/situation"
-      class="inline-flex items-center px-4 py-2 bg-gray-700 hover:bg-gray-800
-             text-white rounded-md shadow-md transition hover:shadow-lg"
-    >
+    <a routerLink="/situation"
+       class="inline-flex items-center px-4 py-2 bg-gray-700 hover:bg-gray-800
+              text-white rounded-md shadow-md transition hover:shadow-lg">
       <i class="fa-solid fa-arrow-left mr-2"></i>
       Back to Situation
     </a>

@@ -1,40 +1,35 @@
-<div class="flex">
-  <!-- Sidebar -->
-  <aside class="fixed top-0 left-0 h-screen w-64 bg-gray-900 text-white shadow-lg z-50 overflow-y-auto">
-    <nav class="p-4">
-      <div *ngFor="let section of sections" class="mb-4">
-        <!-- Section Header -->
-        <div
-          class="flex justify-between items-center px-3 py-2 rounded-md cursor-pointer hover:bg-gray-800 transition-all"
-          (click)="toggleSection(section)"
-        >
-          <div class="flex items-center gap-3">
-            <i [class]="section.icon + ' text-lg'"></i>
-            <span class="text-sm font-semibold tracking-wide">{{ section.label }}</span>
-          </div>
-          <i
-            class="fa-solid transition-transform duration-300"
-            [ngClass]="{
-              'fa-chevron-down rotate-180': section.expanded,
-              'fa-chevron-right': !section.expanded
-            }"
-          ></i>
+<aside class="w-64 h-screen bg-gray-900 text-white fixed top-0 left-0 z-50 shadow-lg">
+  <nav class="p-4 overflow-y-auto h-full">
+    <div *ngFor="let section of sections" class="mb-4">
+      <div
+        class="flex justify-between items-center px-3 py-2 rounded-md cursor-pointer hover:bg-gray-800"
+        (click)="toggleSection(section)"
+      >
+        <div class="flex items-center gap-3">
+          <i [class]="section.icon + ' text-lg'"></i>
+          <span class="text-sm font-semibold">{{ section.label }}</span>
         </div>
-
-        <!-- Section Items -->
-        <ul *ngIf="section.expanded" class="mt-1 ml-4 border-l border-gray-700 pl-3 space-y-1">
-          <li *ngFor="let item of section.items">
-            <a
-              [routerLink]="item.route"
-              class="flex items-center gap-2 px-3 py-2 rounded-md text-sm hover:bg-gray-700 transition-all"
-              routerLinkActive="bg-gray-700 font-bold"
-            >
-              <i [class]="item.icon"></i>
-              <span>{{ item.label }}</span>
-            </a>
-          </li>
-        </ul>
+        <i
+          class="fa-solid transition-transform duration-300"
+          [ngClass]="{
+            'fa-chevron-down rotate-180': section.expanded,
+            'fa-chevron-right': !section.expanded
+          }"
+        ></i>
       </div>
-    </nav>
-  </aside>
-</div>
+
+      <ul *ngIf="section.expanded" class="mt-1 ml-4 border-l border-gray-700 pl-3 space-y-1">
+        <li *ngFor="let item of section.items">
+          <a
+            [routerLink]="item.route"
+            class="flex items-center gap-2 px-3 py-2 rounded-md text-sm hover:bg-gray-700 transition-all"
+            routerLinkActive="bg-gray-700 font-bold"
+          >
+            <i [class]="item.icon"></i>
+            <span>{{ item.label }}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</aside>

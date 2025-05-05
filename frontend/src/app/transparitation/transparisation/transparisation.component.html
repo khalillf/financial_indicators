@@ -1,45 +1,61 @@
-<!-- file: src/app/transparisation/transparisation/transparisation.component.html -->
-<div class="p-6 bg-white shadow-xl rounded-xl max-w-7xl mx-auto mt-6">
-  <h2 class="text-xl font-bold mb-4">Résultat de transparisation</h2>
-  <p class="mb-4 text-gray-700">
-    Date: <strong>{{ date }}</strong> | PTF: <strong>{{ ptf }}</strong>
-  </p>
+<!-- src/app/transparisation/transparisation.component.html -->
+<div class="p-6 bg-gray-900 min-h-screen text-white">
+  <div class="max-w-7xl mx-auto space-y-8">
 
-  <!-- Table -->
-  <div class="overflow-auto rounded-lg border border-gray-200">
-    <table class="min-w-full text-sm text-left border-collapse" *ngIf="transparisationData.length">
-      <thead class="bg-gray-50">
-      <tr>
-        <th class="px-4 py-3 border">Description</th>
-        <th class="px-4 py-3 border">Catégorie</th>
-        <th class="px-4 py-3 border">Dette Pub VC</th>
-        <th class="px-4 py-3 border">Dette Pub VM</th>
-        <th class="px-4 py-3 border">Dette Priv VC</th>
-        <th class="px-4 py-3 border">Dette Priv VM</th>
-        <th class="px-4 py-3 border">Actions VC</th>
-        <th class="px-4 py-3 border">Actions VM</th>
-        <th class="px-4 py-3 border">Total FP VC</th>
-        <th class="px-4 py-3 border">Total FP VM</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let row of transparisationData" class="hover:bg-purple-50">
-        <td class="border px-4 py-2">{{ row.description }}</td>
-        <td class="border px-4 py-2">{{ row.categorie }}</td>
-        <td class="border px-4 py-2 text-right">{{ row.dettePubVc | number:'1.2-2' }}</td>
-        <td class="border px-4 py-2 text-right">{{ row.dettePubVm | number:'1.2-2' }}</td>
-        <td class="border px-4 py-2 text-right">{{ row.dettePrivVc | number:'1.2-2' }}</td>
-        <td class="border px-4 py-2 text-right">{{ row.dettePrivVm | number:'1.2-2' }}</td>
-        <td class="border px-4 py-2 text-right">{{ row.actionsVc | number:'1.2-2' }}</td>
-        <td class="border px-4 py-2 text-right">{{ row.actionsVm | number:'1.2-2' }}</td>
-        <td class="border px-4 py-2 text-right">{{ row.totalVC_before | number:'1.2-2' }}</td>
-        <td class="border px-4 py-2 text-right">{{ row.totalVM_before | number:'1.2-2' }}</td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+    <!-- Header -->
+    <div class="bg-gray-800 shadow-lg rounded-xl p-6">
+      <h2 class="text-xl font-bold mb-4">Résultat de transparisation</h2>
+      <p class="mb-4 text-gray-300">
+        Date : <strong>{{ date }}</strong> &nbsp;|&nbsp;
+        PTF : <strong>{{ ptf }}</strong>
+      </p>
 
-  <div *ngIf="!transparisationData.length" class="text-gray-500 mt-4">
-    No transparisation data found.
+      <!-- Table -->
+      <div class="overflow-auto rounded-lg border border-gray-700">
+        <table
+          *ngIf="transparisationData.length"
+          class="min-w-full text-sm text-left divide-y divide-gray-700"
+        >
+          <thead class="bg-gray-700 text-gray-300">
+          <tr>
+            <th class="px-4 py-3">Description</th>
+            <th class="px-4 py-3">Catégorie</th>
+            <th class="px-4 py-3 text-right">Dette Pub VC</th>
+            <th class="px-4 py-3 text-right">Dette Pub VM</th>
+            <th class="px-4 py-3 text-right">Dette Priv VC</th>
+            <th class="px-4 py-3 text-right">Dette Priv VM</th>
+            <th class="px-4 py-3 text-right">Actions VC</th>
+            <th class="px-4 py-3 text-right">Actions VM</th>
+            <th class="px-4 py-3 text-right">Total FP VC</th>
+            <th class="px-4 py-3 text-right">Total FP VM</th>
+          </tr>
+          </thead>
+
+          <tbody class="divide-y divide-gray-700">
+          <tr
+            *ngFor="let row of transparisationData"
+            [ngClass]="{ 'bg-purple-900': row.highlight, 'hover:bg-gray-700': true }"
+          >
+            <td class="px-4 py-2">{{ row.description }}</td>
+            <td class="px-4 py-2">{{ row.categorie }}</td>
+
+            <td class="px-4 py-2 text-right">{{ row.dettePubVc   | number:'1.2-2' }}</td>
+            <td class="px-4 py-2 text-right">{{ row.dettePubVm   | number:'1.2-2' }}</td>
+            <td class="px-4 py-2 text-right">{{ row.dettePrivVc  | number:'1.2-2' }}</td>
+            <td class="px-4 py-2 text-right">{{ row.dettePrivVm  | number:'1.2-2' }}</td>
+            <td class="px-4 py-2 text-right">{{ row.actionsVc    | number:'1.2-2' }}</td>
+            <td class="px-4 py-2 text-right">{{ row.actionsVm    | number:'1.2-2' }}</td>
+            <td class="px-4 py-2 text-right">{{ row.totalVC_before | number:'1.2-2' }}</td>
+            <td class="px-4 py-2 text-right">{{ row.totalVM_before | number:'1.2-2' }}</td>
+          </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="!transparisationData.length" class="text-gray-400 p-4">
+          No transparisation data found.
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>

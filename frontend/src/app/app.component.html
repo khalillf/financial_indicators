@@ -1,9 +1,9 @@
-<div class="flex">
-  <!-- Sidebar (already fixed in its own component) -->
+<div class="relative h-screen bg-gray-900 text-white">
+  <!-- Sidebar -->
   <app-sidebar></app-sidebar>
 
-  <!-- Main Content (router-outlet) with left margin to avoid overlap) -->
-  <div class="ml-64 w-full">
+  <!-- Main Content (pushed right by sidebar width) -->
+  <main class="pl-64 h-full overflow-y-auto p-6">
     <router-outlet></router-outlet>
-  </div>
+  </main>
 </div>

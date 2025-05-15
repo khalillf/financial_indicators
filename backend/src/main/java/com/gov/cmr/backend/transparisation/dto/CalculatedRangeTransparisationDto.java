@@ -3,8 +3,8 @@ package com.gov.cmr.backend.transparisation.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public record CalculatedTransparisationDto(
-
+public record CalculatedRangeTransparisationDto(
+        LocalDate datePosition,
         String code,
         String description,
         String categorie,

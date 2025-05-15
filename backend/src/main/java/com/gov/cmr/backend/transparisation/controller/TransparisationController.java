@@ -52,5 +52,14 @@ public class TransparisationController {
             @RequestBody List<StatisticalRecordDto> payload) {
         return statisticalRecordService.saveAll(payload);
     }
+    /* ADD this endpoint – keep the others untouched */
+    @GetMapping("/calculated/aggregate-by-categorie-range")
+    public List<CategorieTotalsDto> getAggregatedByCategorieRange(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate")   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam("ptf")       String ptf) {
+
+        return transparisationService.getAggregatedByCategorie(startDate, endDate, ptf);
+    }
 
 }

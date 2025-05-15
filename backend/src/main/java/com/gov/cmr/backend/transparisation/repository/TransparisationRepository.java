@@ -1,5 +1,6 @@
 package com.gov.cmr.backend.transparisation.repository;
 
+import com.gov.cmr.backend.transparisation.dto.CalculatedRangeTransparisationDto;
 import com.gov.cmr.backend.transparisation.dto.CalculatedTransparisationDto;
 import com.gov.cmr.backend.transparisation.dto.TransparisationResultDto;
 import com.gov.cmr.backend.transparisation.entity.Transparisation;
@@ -90,5 +91,42 @@ HAVING
 
 """, nativeQuery = true)
     List<CalculatedTransparisationDto> calculateByDateAndPtf(@Param("date") LocalDate date, @Param("ptf") String ptf);
+
+
+
+ /* TransparisationRepository.java */
+
+ @Query(value = """
+SELECT
+    f.date_position                                 AS date_position,
+    f.code,
+    f.description                                   AS description,
+    t.categorie                                     AS categorie,
+
+    /* calculated fields */
+    ROUND((SUM(f.pdr_total_net) * t.dette_public)::numeric / 100, 2) AS dette_pub_vc,
+    ROUND((SUM(f.total_valo)     * t.dette_public)::numeric / 100, 2) AS dette_pub_vm,
+    ROUND((SUM(f.pdr_total_net) * t.dette_privee)::numeric / 100, 2) AS dette_priv_vc,
+    ROUND((SUM(f.total_valo)     * t.dette_privee)::numeric / 100, 2) AS dette_priv_vm,
+    ROUND((SUM(f.pdr_total_net) * t.action)::numeric / 100, 2)       AS actions_vc,
+    ROUND((SUM(f.total_valo)     * t.action)::numeric / 100, 2)       AS actions_vm,
+
+    /* totals before treatment */
+    (SELECT SUM(f2.total_valo)    FROM fiche_portefeuille f2 WHERE f2.code = f.code) AS totalVM_before,
+    (SELECT SUM(f2.pdr_total_net) FROM fiche_portefeuille f2 WHERE f2.code = f.code) AS totalVC_before
+
+FROM fiche_portefeuille f
+JOIN transparisation t ON t.titre = f.code
+WHERE f.date_position = :date
+  AND f.ptf           = :ptf
+  AND :date >= t.date_image
+  AND :date <  t.date_image_fin
+GROUP BY
+    f.date_position, f.code, f.description,
+    t.categorie, t.dette_public, t.dette_privee, t.action
+""", nativeQuery = true)
+ List<CalculatedRangeTransparisationDto>
+ calculateRangeByDateAndPtf(@Param("date") LocalDate date,
+                            @Param("ptf")  String     ptf);
 
 }
